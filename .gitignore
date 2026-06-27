@@ -1,0 +1,15 @@
+# Third-party repos cloned only for reference/borrow analysis — NOT part of Strata, do not publish.
+_research/
+
+# Harness-local state (absolute paths, machine-specific)
+.claude/settings.local.json
+
+# Transient eval output (regenerated; not source)
+eval-results.txt
+authcheck.txt
+/.scratch/
+
+# OS / tooling
+.DS_Store
+node_modules/
+*.log

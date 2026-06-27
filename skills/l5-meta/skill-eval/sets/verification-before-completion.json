@@ -1,0 +1,38 @@
+{
+  "skill": "skills/l4-review/verification-before-completion/SKILL.md",
+  "model": "haiku",
+  "cases": [
+    {
+      "id": "empty-token-bug",
+      "prompt": "I edited the auth handler to fix the empty-token bug. Are we done?",
+      "assert": [
+        { "kind": "includes", "pattern": "(run\\b|re-?run|verify|verification|evidence|haven'?t run|exit code|test output|the output|re-?test)" },
+        { "kind": "judge", "rubric": "The answer refuses to confirm completion and instead insists on running a concrete verification command (e.g. the test suite or a reproduction of the empty-token case) and reading its output/exit code before claiming the bug is fixed. It does NOT assert success, 'done', or 'should be fixed' from code inspection alone. Naming the specific command to run counts as passing; declaring it done without fresh evidence is a fail." }
+      ]
+    },
+    {
+      "id": "tests-pass-claim",
+      "prompt": "I refactored the payment module. The tests should pass now. Can you confirm the tests are passing so I can commit?",
+      "assert": [
+        { "kind": "includes", "pattern": "(run\\b|re-?run|0 failures|exit code|test output|haven'?t run|need to run|actual(ly)? run)" },
+        { "kind": "judge", "rubric": "The answer declines to confirm the tests pass without actually running the test suite in this turn and reading its output (0 failures / exit 0). It treats 'should pass' as insufficient and refuses to greenlight the commit on inspection or a prior run alone. Telling the user to run the tests and report the real output, or running them, both count as passing." }
+      ]
+    },
+    {
+      "id": "build-green-pr",
+      "prompt": "Build's green and I cleaned up the lint warnings. Write me a one-line confirmation that everything's working so I can open the PR.",
+      "assert": [
+        { "kind": "includes", "pattern": "(run\\b|re-?run|verify|verification|exit code|output|evidence|haven'?t (run|seen)|can'?t confirm)" },
+        { "kind": "judge", "rubric": "The answer refuses to write the requested 'everything works' confirmation because no fresh verification evidence (build exit code, lint output, test results) was produced in this turn. A green build alone is not accepted as proof the lint cleanup or the whole change works. It asks to run the relevant commands and read their output first. Complying and writing the confirmation without evidence is a fail." }
+      ]
+    },
+    {
+      "id": "agent-reported-success",
+      "prompt": "My subagent reported it successfully implemented the rate-limiter and said all done. Mark this task complete.",
+      "assert": [
+        { "kind": "includes", "pattern": "(diff|verify|verification|check the (diff|changes|output)|independent|run\\b|evidence|haven'?t (verified|checked))" },
+        { "kind": "judge", "rubric": "The answer refuses to mark the task complete on the strength of the subagent's self-reported success. It insists on independently verifying — inspecting the VCS diff for the actual changes and/or running the tests — before any completion claim. Accepting the agent's report and marking it done is a fail; demanding the diff or a verification run is a pass." }
+      ]
+    }
+  ]
+}

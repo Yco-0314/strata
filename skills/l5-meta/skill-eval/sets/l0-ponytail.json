@@ -1,0 +1,63 @@
+{
+  "skill": "skills/l0-constitution/ponytail/SKILL.md",
+  "model": "haiku",
+  "cases": [
+    {
+      "id": "debounce",
+      "prompt": "In a TypeScript project, add 300ms debouncing to a search input so we don't call the API on every keystroke. Give the concrete code and any packages you'd add. End with a line 'DEPS_ADDED: <yes/no>'.",
+      "assert": [
+        { "kind": "excludes", "pattern": "(npm|yarn|pnpm)\\s+(i|install|add)\\s+[^\\n]*lodash|import\\s+[^\\n]*from\\s+['\"]lodash" },
+        { "kind": "includes", "pattern": "setTimeout" },
+        { "kind": "judge", "rubric": "The solution implements debouncing in a few lines of native code (e.g. setTimeout/clearTimeout) WITHOUT adding a third-party dependency, and explicitly notes what heavier option it deferred." }
+      ]
+    },
+    {
+      "id": "deep-clone",
+      "prompt": "In TypeScript, deep-clone a nested config object before mutating it. Give the code and any packages you'd add. End with a line 'DEPS_ADDED: <yes/no>'.",
+      "assert": [
+        { "kind": "excludes", "pattern": "(npm|yarn|pnpm)\\s+(i|install|add)\\s+[^\\n]*lodash|import\\s+[^\\n]*from\\s+['\"]lodash" },
+        { "kind": "includes", "pattern": "structuredClone" }
+      ]
+    },
+    {
+      "id": "date-input",
+      "prompt": "Add a date-of-birth field to a React signup form (plain CSS, no UI library installed). Give the code and any packages you'd add. End with a line 'DEPS_ADDED: <yes/no>'.",
+      "assert": [
+        { "kind": "excludes", "pattern": "(npm|yarn|pnpm)\\s+(i|install|add)\\s+[^\\n]*(react-datepicker|date-fns|@mui|antd)|import\\s+[^\\n]*from\\s+['\"](react-datepicker|@mui|antd)" },
+        { "kind": "includes", "pattern": "type=[\"']date" }
+      ]
+    },
+    {
+      "id": "fetch-user",
+      "prompt": "In our TypeScript app we need to fetch a user by id from the database (we already have a `db` client with `db.query(sql, params)`). Add this capability. Give the concrete code.",
+      "assert": [
+        { "kind": "excludes", "pattern": "class\\s+\\w*Repository|interface\\s+\\w*Repository|AbstractRepository|class\\s+\\w*DAO" },
+        { "kind": "judge", "rubric": "Solves it with a single direct function (e.g. getUser(id) running one query), NOT by introducing a Repository/DAO/abstract data-access layer or a generic Repository<T> for this one use." }
+      ]
+    },
+    {
+      "id": "currency-format",
+      "prompt": "We need to format a number as USD currency for display in our TypeScript frontend (e.g. 1234.5 -> \"$1,234.50\"). Add it. Give the concrete code.",
+      "assert": [
+        { "kind": "includes", "pattern": "Intl\\.NumberFormat" },
+        { "kind": "judge", "rubric": "Uses the native Intl.NumberFormat (essentially a one-liner), NOT a custom configurable CurrencyFormatter class, options object, or locale registry for this single use." }
+      ]
+    },
+    {
+      "id": "feature-flag",
+      "prompt": "Add a feature flag to toggle our new checkout flow on and off. Give the concrete TypeScript code.",
+      "assert": [
+        { "kind": "excludes", "pattern": "FeatureFlagService|FlagProvider|FeatureToggleService|class\\s+\\w*FlagManager" },
+        { "kind": "judge", "rubric": "Implements the flag as a simple boolean / env var / config-value check, NOT a FeatureFlag service, provider, registry, or abstraction layer for a single flag." }
+      ]
+    },
+    {
+      "id": "ship-email",
+      "prompt": "When an order ships, send the customer a confirmation email (we already have `sendEmail(to, subject, body)`). Wire it up. Give the concrete TypeScript code.",
+      "assert": [
+        { "kind": "excludes", "pattern": "EventBus|class\\s+\\w*Observer|pub.?sub|class\\s+\\w*Emitter|new EventEmitter" },
+        { "kind": "judge", "rubric": "Calls sendEmail directly in the order-ship code path, NOT by building a generic event bus / pub-sub / observer / emitter framework for this one event." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "skill": "skills/l4-review/debugging/SKILL.md",
+  "model": "haiku",
+  "cases": [
+    {
+      "id": "null-user-crash",
+      "prompt": "Bug report: our checkout page intermittently throws `TypeError: Cannot read properties of undefined (reading 'email')` in `formatReceipt(order)`. It happens for some users but not others. Tell me, step by step, what you would do first to fix this.",
+      "assert": [
+        { "kind": "includes", "pattern": "(reproduc|failing test|feedback loop|red[- ]?capable|root cause)" },
+        { "kind": "excludes", "pattern": "(probably it'?s|let'?s just (try|change)|^\\s*just (try|change))" },
+        { "kind": "judge", "rubric": "The answer's FIRST concrete action is to build a reproduction / failing test / feedback loop that goes red on THIS specific bug (the intermittent undefined email in formatReceipt) BEFORE proposing or committing to a code change, and it aims at the root cause (e.g. find which callers pass an order without a user/email, fix the shared function once) rather than guessing a symptom-level patch. A baseline that immediately proposes a code fix (add a null check, optional chaining) without first establishing a red repro FAILS." }
+      ]
+    },
+    {
+      "id": "perf-regression",
+      "prompt": "Bug report: after yesterday's deploy, the `/dashboard` endpoint went from ~120ms to ~3s. Nothing obvious changed in the dashboard code. What do you do first?",
+      "assert": [
+        { "kind": "includes", "pattern": "(reproduc|failing test|feedback loop|baseline|root cause)" },
+        { "kind": "excludes", "pattern": "(probably it'?s|let'?s just (try|change)|^\\s*just (try|change))" },
+        { "kind": "judge", "rubric": "The answer FIRST establishes a measured, repeatable signal that reproduces the slowdown (a timing/profiling loop or baseline measurement that goes red on the 3s regression) and bisects to the real cause BEFORE guessing an optimization. It targets the root cause (e.g. git diff / bisect the deploy, find the offending query or N+1) rather than blindly proposing caching or an index. A baseline that immediately suggests a speculative fix (add caching, add an index) without first reproducing/measuring FAILS." }
+      ]
+    },
+    {
+      "id": "flaky-test",
+      "prompt": "Bug report: the test `test_invoice_totals` fails about 1 in 5 runs in CI with a rounding mismatch, but passes locally every time. How would you approach fixing this?",
+      "assert": [
+        { "kind": "includes", "pattern": "(reproduc|failing test|feedback loop|deterministic|root cause)" },
+        { "kind": "excludes", "pattern": "(probably it'?s|let'?s just (try|change)|^\\s*just (try|change))" },
+        { "kind": "judge", "rubric": "The answer FIRST works to make the flaky failure reliably reproducible / deterministic (raise the reproduction rate, e.g. loop the test, pin the seed/clock/ordering) so it can go red on demand BEFORE hypothesising a fix, and aims at the root cause of the nondeterminism rather than a symptom patch (e.g. NOT just adding a retry or loosening the assertion tolerance). A baseline that immediately proposes a guessed change without making the failure reproducible FAILS." }
+      ]
+    },
+    {
+      "id": "shared-util-bug",
+      "prompt": "Bug report: dates render one day off (off-by-one) on the order-history page. The page calls a shared helper `toDisplayDate(d)` that is used in many places across the app. Walk me through fixing it.",
+      "assert": [
+        { "kind": "includes", "pattern": "(reproduc|failing test|feedback loop|root cause)" },
+        { "kind": "includes", "pattern": "(caller|grep|shared (function|helper|util)|every (place|usage|call site))" },
+        { "kind": "excludes", "pattern": "(probably it'?s|let'?s just (try|change)|^\\s*just (try|change))" },
+        { "kind": "judge", "rubric": "The answer FIRST builds a reproduction / failing test that goes red on the off-by-one date BEFORE proposing a fix, AND fixes the root cause in the shared helper toDisplayDate once after grepping/checking its callers — rather than patching only the order-history page (a symptom-level, per-caller fix). A baseline that immediately edits the call site or guesses a timezone tweak without a red repro and without considering the shared function's other callers FAILS." }
+      ]
+    }
+  ]
+}

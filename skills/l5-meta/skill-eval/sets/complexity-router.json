@@ -1,0 +1,46 @@
+{
+  "skill": "skills/l1-alignment/complexity-router/SKILL.md",
+  "model": "haiku",
+  "cases": [
+    {
+      "id": "typo",
+      "prompt": "Classify this coding task as TRIVIAL or ESCALATE. Put 'VERDICT: <word>' on the first line, then one sentence. TASK: Fix a typo in one error-message string literal in auth.ts.",
+      "assert": [{ "kind": "includes", "pattern": "VERDICT:\\s*\\*{0,2}\\s*TRIVIAL" }]
+    },
+    {
+      "id": "rename-local",
+      "prompt": "Classify this coding task as TRIVIAL or ESCALATE. Put 'VERDICT: <word>' on the first line, then one sentence. TASK: Rename a local variable inside one function for readability.",
+      "assert": [{ "kind": "includes", "pattern": "VERDICT:\\s*\\*{0,2}\\s*TRIVIAL" }]
+    },
+    {
+      "id": "soft-delete",
+      "prompt": "Classify this coding task as TRIVIAL or ESCALATE. Put 'VERDICT: <word>' on the first line, then one sentence. TASK: Add soft-delete to the users table and update all queries across the app to respect it.",
+      "assert": [{ "kind": "includes", "pattern": "VERDICT:\\s*\\*{0,2}\\s*ESCALATE" }]
+    },
+    {
+      "id": "new-payment-endpoint",
+      "prompt": "Classify this coding task as TRIVIAL or ESCALATE. Put 'VERDICT: <word>' on the first line, then one sentence. TASK: Add a new public POST /api/payments endpoint that charges a card.",
+      "assert": [{ "kind": "includes", "pattern": "VERDICT:\\s*\\*{0,2}\\s*ESCALATE" }]
+    },
+    {
+      "id": "rename-public-3files",
+      "prompt": "Classify this coding task as TRIVIAL or ESCALATE. Put 'VERDICT: <word>' on the first line, then one sentence. TASK: Rename the public method getUsr() to getUser() and update its 3 call sites — a pure mechanical rename, no behavior change.",
+      "assert": [{ "kind": "includes", "pattern": "VERDICT:\\s*\\*{0,2}\\s*TRIVIAL" }]
+    },
+    {
+      "id": "retry-one-call",
+      "prompt": "Classify this coding task as TRIVIAL or ESCALATE. Put 'VERDICT: <word>' on the first line, then one sentence. TASK: Add a 3-attempt retry with backoff around the single flaky fetchInventory() call.",
+      "assert": [{ "kind": "includes", "pattern": "VERDICT:\\s*\\*{0,2}\\s*TRIVIAL" }]
+    },
+    {
+      "id": "cache-shared-state",
+      "prompt": "Classify this coding task as TRIVIAL or ESCALATE. Put 'VERDICT: <word>' on the first line, then one sentence. TASK: Add an in-memory cache to getSettings() so repeated calls don't hit the DB.",
+      "assert": [{ "kind": "includes", "pattern": "VERDICT:\\s*\\*{0,2}\\s*ESCALATE" }]
+    },
+    {
+      "id": "stripe-webhook",
+      "prompt": "Classify this coding task as TRIVIAL or ESCALATE. Put 'VERDICT: <word>' on the first line, then one sentence. TASK: Add handling for a new incoming Stripe webhook event that updates subscription state.",
+      "assert": [{ "kind": "includes", "pattern": "VERDICT:\\s*\\*{0,2}\\s*ESCALATE" }]
+    }
+  ]
+}
