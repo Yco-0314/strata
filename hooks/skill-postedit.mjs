@@ -61,7 +61,7 @@ function selftest() {
   ok(analyze('---\nname: x\ndescription: d\n---\n' + 'x'.repeat(6500), 'x').some(i => i.includes('> 6000')), 'body>6k flagged')
   ok(analyze('no frontmatter here', 'x').some(i => i.includes('no YAML')), 'missing frontmatter flagged')
   console.log(bad ? '\nself-test FAIL' : '\nself-test PASS')
-  process.exit(bad ? 0 : 0) // never fail the hook process on selftest
+  process.exit(bad ? 1 : 0) // --selftest is CI/manual only (never the live hook path), so fail loudly
 }
 
 if (invokedDirectly && process.argv[2] === '--selftest') selftest()

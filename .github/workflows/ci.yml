@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Drift gate (invariant phrases survive in every copy)
+        run: node scripts/check-rule-copies.mjs
+
+      - name: Self-tests (model-free)
+        run: |
+          node skills/l5-meta/skill-eval/run.mjs --self-test
+          node skills/l5-meta/improve-loop/loop.mjs --self-test
+          node skills/l5-meta/skill-validator/budget.mjs --self-test
+          node hooks/skill-postedit.mjs --selftest
+          node hooks/session-start.mjs --selftest
+
+      - name: Validate JSON (eval sets, scenarios, backlog, marketplace, hooks)
+        run: |
+          for f in skills/l5-meta/skill-eval/sets/*.json \
+                   skills/l5-meta/drift-eval/scenarios.json \
+                   skills/l5-meta/improve-loop/backlog.json \
+                   .claude-plugin/marketplace.json \
+                   .claude-plugin/hooks/hooks.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" && echo "ok $f"
+          done
+
+      - name: Skill conformance (name==dir, description<=1024, invocation consistency)
+        run: |
+          node --input-type=module -e '
+          import { readdirSync, readFileSync } from "node:fs";
+          import { analyze } from "./hooks/skill-postedit.mjs";
+          function walk(d){let o=[];for(const e of readdirSync(d,{withFileTypes:true})){const p=`${d}/${e.name}`;if(e.isDirectory())o=o.concat(walk(p));else if(e.name==="SKILL.md")o.push(p);}return o;}
+          let bad=0;
+          for(const f of walk("skills")){
+            const issues=analyze(readFileSync(f,"utf8"),f.split("/").slice(-2)[0]).filter(i=>!i.includes("body "));
+            if(issues.length){bad++;console.error(f+": "+issues.join("; "));}
+          }
+          if(bad){console.error(bad+" conformance issue(s)");process.exit(1);}
+          console.log("all skills conformant");
+          '
