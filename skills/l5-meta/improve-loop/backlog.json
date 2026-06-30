@@ -1,11 +1,11 @@
 {
-  "note": "Pending borrows from the 3-repo + ecosystem synthesis, to evaluate via the meta-loop. Each ships only if it moves a number (skill-eval Δ) or removes a documented failure mode. Applied/rejected items move to lessons.md. Surfaced by loop.mjs as 'evaluate next'.",
+  "note": "Pending borrows from the 3-repo + ecosystem synthesis, to evaluate via the meta-loop. Each ships only if it moves a number (skill-eval \u0394) or removes a documented failure mode. Applied/rejected items move to lessons.md. Surfaced by loop.mjs as 'evaluate next'.",
   "items": [
     {
       "id": "skill-validator-rubric",
       "target": "new skill (L5)",
       "status": "resolved",
-      "resolution": "2026-06-27: built skills/l5-meta/skill-validator (budget.mjs deterministic scan + 6-axis opus judge via subagents). Ran on all 19 skills — healthy (all >=7 overall). Found & fixed: tdd mode-count bug, ponytail caveat repetition. Surfaced 2 validator blind spots (directive-precision should be invocation-aware; budget should measure injected size not SKILL.md size for resident skills) → noted for skill-validator v2.",
+      "resolution": "2026-06-27: built skills/l5-meta/skill-validator (budget.mjs deterministic scan + 6-axis opus judge via subagents). Ran on all 19 skills \u2014 healthy (all >=7 overall). Found & fixed: tdd mode-count bug, ponytail caveat repetition. Surfaced 2 validator blind spots (directive-precision should be invocation-aware; budget should measure injected size not SKILL.md size for resident skills) \u2192 noted for skill-validator v2.",
       "hypothesis": "A 6-axis LLM-judge rubric (clarity, actionability, token-efficiency, scope discipline, directive precision, novelty) + hard token budgets, as a second L5 quality gate beside skill-eval. From agent-ecosystem/skill-validator. Pin the grader model; treat scores as trend.",
       "ship_test": "Catches a real scope/token violation skill-eval misses, on at least one existing skill."
     },
@@ -13,7 +13,7 @@
       "id": "posttooluse-self-correct",
       "target": "new hook (L5/L6)",
       "status": "resolved",
-      "resolution": "2026-06-27: built hooks/skill-postedit.mjs (PostToolUse on Write|Edit|MultiEdit) — runs the FAST deterministic skill-validator checks (frontmatter conformance + token budget) on an edited SKILL.md, plus the drift gate for ponytail, and injects violations as additionalContext so the author fixes them in the same turn. cwd-independent (resolves paths via its own location). Registered with the SessionStart hook in .claude-plugin/hooks/hooks.json. The expensive 6-axis LLM judge stays out of the hook (must be fast). self-test 8/8.",
+      "resolution": "2026-06-27: built hooks/skill-postedit.mjs (PostToolUse on Write|Edit|MultiEdit) \u2014 runs the FAST deterministic skill-validator checks (frontmatter conformance + token budget) on an edited SKILL.md, plus the drift gate for ponytail, and injects violations as additionalContext so the author fixes them in the same turn. cwd-independent (resolves paths via its own location). Registered with the SessionStart hook in .claude-plugin/hooks/hooks.json. The expensive 6-axis LLM judge stays out of the hook (must be fast). self-test 8/8.",
       "hypothesis": "PostToolUse hook on Write/Edit to *SKILL.md runs the validator/skill-eval at edit time and injects results as additionalContext, so the author fixes token/scope violations in the same turn. From skill-tools. Lift the hook pattern only.",
       "ship_test": "Demonstrably surfaces a violation during an edit, before CI."
     },
@@ -21,23 +21,23 @@
       "id": "transcript-feedback-rewrite",
       "target": "writing-skills (L5) / improve-loop",
       "status": "resolved",
-      "resolution": "2026-06-27: added a 'Transcript feedback' diagnosis step to improve-loop (read the failing skill-eval baseOut/skillOut, classify wrong-test / mis-fire / convergence / real-gap BEFORE re-authoring; a fix to the eval counts as progress). Also fixes the validator's finding that improve-loop's Author step was under-specified. DEMONSTRATED on real data: it caught that verification-before-completion's recorded +25-50% was an artifact of a broken `excludes` (which penalised the skill for QUOTING the forbidden phrase to refute it). Corrected → true Δ 0 (Claude already verifies by default; baseline 4/4). verification joins the convergence group.",
-      "hypothesis": "Instrument tool-call count / errors / tokens, feed transcripts back to diagnose mis-fires, propose spec edits — the missing back half of the eval loop. From Anthropic 'Writing effective tools for AI agents'. Pair every rewrite with the token-budget gate.",
-      "ship_test": "Turns one observed mis-fire into a concrete description/body edit that moves the skill's Δ."
+      "resolution": "2026-06-27: added a 'Transcript feedback' diagnosis step to improve-loop (read the failing skill-eval baseOut/skillOut, classify wrong-test / mis-fire / convergence / real-gap BEFORE re-authoring; a fix to the eval counts as progress). Also fixes the validator's finding that improve-loop's Author step was under-specified. DEMONSTRATED on real data: it caught that verification-before-completion's recorded +25-50% was an artifact of a broken `excludes` (which penalised the skill for QUOTING the forbidden phrase to refute it). Corrected \u2192 true \u0394 0 (Claude already verifies by default; baseline 4/4). verification joins the convergence group.",
+      "hypothesis": "Instrument tool-call count / errors / tokens, feed transcripts back to diagnose mis-fires, propose spec edits \u2014 the missing back half of the eval loop. From Anthropic 'Writing effective tools for AI agents'. Pair every rewrite with the token-budget gate.",
+      "ship_test": "Turns one observed mis-fire into a concrete description/body edit that moves the skill's \u0394."
     },
     {
       "id": "find-skills-reputation-gate",
       "target": "new skill (L5)",
       "status": "resolved",
-      "resolution": "2026-06-27: built skills/l5-meta/find-skills — a supply-chain trust gate (adoption + verified source + non-overlap → PULL / PATTERN-ONLY / SKIP) run before any external borrow enters the backlog. A gate, not a behavior-changer (no Δ expected, like complexity-router). Retroactively agrees with calls already made (skill-tools plugin = PATTERN-ONLY, Trail of Bits = PULL).",
-      "hypothesis": "Before recommending any external skill/dependency, gate on install-count + verified GitHub source. From vercel-labs/find-skills. Install count is a weak, gameable signal — treat as weak, not proof.",
+      "resolution": "2026-06-27: built skills/l5-meta/find-skills \u2014 a supply-chain trust gate (adoption + verified source + non-overlap \u2192 PULL / PATTERN-ONLY / SKIP) run before any external borrow enters the backlog. A gate, not a behavior-changer (no \u0394 expected, like complexity-router). Retroactively agrees with calls already made (skill-tools plugin = PATTERN-ONLY, Trail of Bits = PULL).",
+      "hypothesis": "Before recommending any external skill/dependency, gate on install-count + verified GitHub source. From vercel-labs/find-skills. Install count is a weak, gameable signal \u2014 treat as weak, not proof.",
       "ship_test": "Used at least once to reject a low-reputation external skill the framework would otherwise have pulled."
     },
     {
       "id": "gsd-fresh-session-per-phase",
       "target": "subagent-driven-development (L3)",
       "status": "resolved",
-      "resolution": "2026-06-27: added a 'Long multi-phase work (fresh session per phase)' rule to SDD — group tasks into phases, start a fresh session at each boundary handing only the self-contained briefs + a one-paragraph state summary. Hard context isolation per phase beats in-session execution for long runs. One section, composes with the existing per-task loop.",
+      "resolution": "2026-06-27: added a 'Long multi-phase work (fresh session per phase)' rule to SDD \u2014 group tasks into phases, start a fresh session at each boundary handing only the self-contained briefs + a one-paragraph state summary. Hard context isolation per phase beats in-session execution for long runs. One section, composes with the existing per-task loop.",
       "hypothesis": "Hard context isolation per execution phase (fresh session + atomic story-file handoff) beats in-session execution for long multi-phase work. From GSD. Compose as a one-line rule, not a framework.",
       "ship_test": "Reduces context-rot failures on a multi-phase task vs in-session SDD."
     },
@@ -45,17 +45,17 @@
       "id": "harder-router-cases",
       "target": "skills/l5-meta/skill-eval/sets/complexity-router.json (eval design)",
       "status": "resolved",
-      "resolution": "2026-06-27: added 4 borderline cases (rename/retry/cache/webhook), ran both models. Still Δ 0% in all four cells — baseline classifies correctly even on borderline. complexity-router is a flow GATE, not a classification-accuracy booster; single-shot eval cannot measure it. Closed: do not chase a Δ. Any future signal needs a multi-turn modality.",
-      "hypothesis": "Current router cases are clear-cut — both haiku and sonnet classify all 4 correctly (Δ 0%), so the skill can't show value. Add BORDERLINE cases where a no-skill baseline mis-routes.",
-      "ship_test": "On the new borderline cases, baseline mis-routes at least one and with-skill corrects it (Δ>0)."
+      "resolution": "2026-06-27: added 4 borderline cases (rename/retry/cache/webhook), ran both models. Still \u0394 0% in all four cells \u2014 baseline classifies correctly even on borderline. complexity-router is a flow GATE, not a classification-accuracy booster; single-shot eval cannot measure it. Closed: do not chase a \u0394. Any future signal needs a multi-turn modality.",
+      "hypothesis": "Current router cases are clear-cut \u2014 both haiku and sonnet classify all 4 correctly (\u0394 0%), so the skill can't show value. Add BORDERLINE cases where a no-skill baseline mis-routes.",
+      "ship_test": "On the new borderline cases, baseline mis-routes at least one and with-skill corrects it (\u0394>0)."
     },
     {
       "id": "harder-ponytail-cases",
       "target": "skills/l5-meta/skill-eval/sets/l0-ponytail.json (eval design)",
       "status": "resolved",
-      "resolution": "2026-06-27: added 4 realistic over-build traps (Repository/Formatter/FlagService/EventBus), ran both models. ponytail SHIPS: +25% at (haiku × hard) — the cell where over-building actually happens. Converges to 0% on sonnet (strong models don't over-build these anyway). Confirmed the synthesis's strong-model-convergence prediction. Spawned follow-up: gate ponytail's resident body by model tier (the -33% weak×easy regression).",
-      "hypothesis": "The 3 toy traps (debounce/clone/date) are too easy — modern models already use the native primitive, so sonnet converges (Δ 0%) and haiku even regresses (−33%). Add realistic over-engineering traps (speculative AbstractFactory, premature config layer, multi-file indirection) where strong-model baselines actually over-build, so ponytail's minimization can show a positive Δ. Also test: does ponytail's full body hurt weak models (haiku −33%)? → maybe gate the resident body by model tier.",
-      "ship_test": "On harder traps, sonnet baseline over-builds and with-skill cuts it (Δ>0); and the weak-model regression is understood (lite vs full injection)."
+      "resolution": "2026-06-27: added 4 realistic over-build traps (Repository/Formatter/FlagService/EventBus), ran both models. ponytail SHIPS: +25% at (haiku \u00d7 hard) \u2014 the cell where over-building actually happens. Converges to 0% on sonnet (strong models don't over-build these anyway). Confirmed the synthesis's strong-model-convergence prediction. Spawned follow-up: gate ponytail's resident body by model tier (the -33% weak\u00d7easy regression).",
+      "hypothesis": "The 3 toy traps (debounce/clone/date) are too easy \u2014 modern models already use the native primitive, so sonnet converges (\u0394 0%) and haiku even regresses (\u221233%). Add realistic over-engineering traps (speculative AbstractFactory, premature config layer, multi-file indirection) where strong-model baselines actually over-build, so ponytail's minimization can show a positive \u0394. Also test: does ponytail's full body hurt weak models (haiku \u221233%)? \u2192 maybe gate the resident body by model tier.",
+      "ship_test": "On harder traps, sonnet baseline over-builds and with-skill cuts it (\u0394>0); and the weak-model regression is understood (lite vs full injection)."
     },
     {
       "id": "impact-tiered-rule-slugs",
@@ -64,6 +64,37 @@
       "resolution": "2026-06-27: review output now tags each finding `[TIER] <lens>-<category-slug>` (CRITICAL/HIGH/MEDIUM/LOW + e.g. security-authz / correctness-edge-case / overeng-stdlib), sorted highest-impact-first so a reader fixes the worst thing first and a CI gate can fail on CRITICAL/HIGH only. From vercel react-best-practices.",
       "hypothesis": "CRITICAL/HIGH/MEDIUM/LOW tier + category-prefix slug on each review finding, so they scan by severity.",
       "ship_test": "Reviewers surface the highest-severity finding first on a seeded diff with mixed-severity issues."
+    },
+    {
+      "id": "paper-contract-compilation",
+      "target": "to-issues (L2) + review (L4)",
+      "status": "resolved",
+      "hypothesis": "Compile acceptance criteria into explicit, independently-verifiable CONTRACT clauses, and add a completeness check (every required behavior maps to >=1 clause; uncovered behavior = 'contract incompleteness'). From Sengupta, Briggs, Myshakivskyi 2026 (arxiv 2605.25665) \u2014 their payments case study found contract gaps were a top failure source.",
+      "ship_test": "On a seeded feature with a deliberately under-specified behavior, the completeness check flags the gap before implementation.",
+      "resolution": "2026-06-27: shipped \u2014 to-issues acceptance criteria \u2192 independently-verifiable CONTRACT clauses + a completeness check (uncovered behavior = contract incompleteness). Gate-type addition (no single-shot \u0394, like router); validated by skill-validator (review clean) + gates."
+    },
+    {
+      "id": "paper-failure-arbiter",
+      "target": "debugging (L4) + improve-loop (L5)",
+      "status": "resolved",
+      "hypothesis": "Add a structured failure-arbiter taxonomy (contract-gap / verification-gap / implementation-bug / environment) so a failure is classified and ROUTED to the right fix before diving in. From Sengupta, Briggs, Myshakivskyi 2026 (arxiv 2605.25665)'s four-way failure arbiter.",
+      "ship_test": "Given a failure, the skill names its class and routes (e.g. contract-gap -> back to to-issues, not a code fix).",
+      "resolution": "2026-06-27: shipped \u2014 debugging Phase 0 four-way arbiter (contract-gap/verification-gap/implementation-bug/environment) routes before debugging. TEST: debugging skill-eval re-run sonnet/opus WITH the arbiter held with-skill 4/4, \u0394 +75% (\u2265 recorded +50%) \u2014 NO REGRESSION. REVIEW: novelty 9, scope 9."
+    },
+    {
+      "id": "paper-verification-boundary",
+      "target": "review (L4)",
+      "status": "resolved",
+      "hypothesis": "Add a verification-boundary/coverage pass to review: after the 3 lenses, ask 'what changed behavior does NO lens cover?'. From Sengupta, Briggs, Myshakivskyi 2026 (arxiv 2605.25665) \u2014 verification-boundary issues (bugs no verifier owned) were a documented failure mode.",
+      "ship_test": "On a diff with a cross-cutting behavior outside all 3 lenses, the coverage pass surfaces it.",
+      "resolution": "2026-06-27: shipped \u2014 review coverage pass: after the 3 lenses, flag behavior no lens owns (verification-boundary gap) + any to-issues contract clause no lens can check. Gate-type addition; review-quality held (skill-validator)."
+    },
+    {
+      "id": "paper-deployment-calibration",
+      "target": "improve-loop (L5) \u2014 directional",
+      "status": "pending",
+      "hypothesis": "Calibrate the outer loop on REAL deployment outcomes (did the shipped feature work in production), not only synthetic skill-eval. From Sengupta, Briggs, Myshakivskyi 2026 (arxiv 2605.25665)'s deployment-grounded outer-loop. Strata measures its own skills, not shipped-feature outcomes \u2014 the structural gap.",
+      "ship_test": "Requires a real deployed project; out of scope for in-framework eval. Track outcomes from real use of Strata."
     }
   ]
 }

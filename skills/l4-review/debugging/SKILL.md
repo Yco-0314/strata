@@ -24,12 +24,22 @@ NO HYPOTHESIS WITHOUT A RED-CAPABLE FEEDBACK LOOP FIRST
 Reading code to build a theory before the loop exists is the exact failure this skill
 prevents. Build the loop, *then* think.
 
+## Phase 0 — Failure arbiter: route before you debug (borrow: arxiv 2605.25665)
+
+Classify before assuming a code bug — route, don't patch blindly:
+- **contract-gap** — never specified → back to `to-issues` (fix the contract, not the code).
+- **verification-gap** — uncovered by any check → to `review`'s coverage pass; code may be fine.
+- **implementation-bug** — contract right, code wrong → Phase 1.
+- **environment** — flaky infra/config, code unchanged → stabilize the env.
+
+Only implementation-bug (and reproducible environment) proceed. A code fix for a contract-gap hides the hole.
+
 ## Phase 1 — Build the feedback loop (this IS the skill)
 
 Construct a signal that goes **red on this specific bug**. Try in order: failing test →
-curl/HTTP script → CLI + fixture diff → headless-browser script → replay a captured trace →
-throwaway harness → property/fuzz loop → bisection harness → differential loop → HITL script
-(last resort). Build the right loop and the bug is 90% found.
+curl/CLI + fixture diff → headless-browser script → replay a captured trace → throwaway harness
+→ fuzz/bisection/differential loop → HITL script (last resort). Build the right loop and the bug
+is 90% found.
 
 **Gate — Phase 1 is done only when you can name one command you have already run at least
 once (paste invocation + output) that is:**
@@ -75,9 +85,9 @@ pattern, not a failed hypothesis.
 ## Phase 6 — Cleanup + post-mortem
 
 Original repro gone (re-run the loop); regression test passes (or seam-absence documented);
-all `[DEBUG-]` logs removed (grep); throwaway harnesses deleted; the correct hypothesis
-stated in the commit message. Then ask "what would have prevented this?" — if architectural,
-hand to `improve-codebase-architecture` *after* the fix lands.
+all `[DEBUG-]` logs removed (grep); throwaway harnesses deleted; the correct hypothesis in the
+commit message. Then ask what would have prevented this — if architectural, hand to
+`improve-codebase-architecture` after the fix.
 
 Pairs with `tdd` (L3) for the failing test and `verification-before-completion` (L4) before
 claiming fixed.

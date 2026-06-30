@@ -318,3 +318,37 @@ when they DISAGREE, the scenario is mismatched, not the harness. Final verdicts:
 
 drift-eval is now two-version: v0 (cheap pre-check) + v1 (faithful). The methodology — run both,
 trust agreements, treat disagreement as a mismatched-scenario signal — is the durable result. [[ponytail]]
+
+## 2026-06-27 — borrows from arxiv 2605.25665 (contract-driven adversarial verification)
+
+Evaluated the paper (Sengupta, Briggs, Myshakivskyi 2026) via `find-skills` -> credible source
+(named authors, arxiv + SSRN), PULL-grade for ideas. Added 4 to backlog; implemented 3 and ran
+them through Strata's OWN review + test loop.
+
+**SHIPPED (3):**
+- contract-completeness (`to-issues` + `review`): acceptance criteria -> independently-verifiable
+  contract clauses + a completeness check (uncovered behavior = contract incompleteness, the paper's
+  top deployment failure source).
+- four-way failure arbiter (`debugging` Phase 0): classify contract-gap / verification-gap /
+  implementation-bug / environment and ROUTE before debugging.
+- verification-boundary coverage pass (`review`): after the 3 lenses, flag behavior no lens owns.
+
+**REVIEW** (skill-validator opus 6-axis): all 3 quality-sound. debugging novelty 9 / scope 9 (the
+arbiter adds real value). Two findings, NEITHER from a bad addition: (a) review still doesn't
+operationalize HOW to spawn the 3 lens-reviewers -- PRE-EXISTING -> follow-up; (b) judge flagged the
+inline arxiv citation "unverifiable" (no web access) -- the paper IS verified, keep it.
+
+**TEST** (debugging skill-eval, sonnet/opus, WITH the arbiter): with-skill 4/4 (unchanged), Δ +75%
+(recorded +50%; baseline noise 2/4->1/4). **NO REGRESSION** -- the Phase 0 addition held debugging's
+measured behavior. Also: the live PostToolUse hook flagged debugging body>4000 mid-edit and I trimmed
+4329->4016 (dogfooding the edit-time gate).
+
+**HONEST SCOPE:** contract-completeness + boundary-coverage are GATE-type additions (like router) --
+no single-shot Δ to chase; validated by review-quality + the gates. The arbiter rides `debugging`
+(Δ-measured), so the no-regression test is its ship evidence.
+
+**NOT IMPLEMENTED (1):** `paper-deployment-calibration` -- calibrate the outer loop on REAL shipped-
+feature outcomes, not synthetic skill-eval. The structural gap the paper exposes: Strata measures its
+own skills, not production outcomes. Needs a real deployed project -> stays pending/directional.
+
+Follow-ups for backlog: operationalize review's lens-dispatch; move inline arxiv refs to provenance.

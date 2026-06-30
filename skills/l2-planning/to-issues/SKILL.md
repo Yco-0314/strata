@@ -47,6 +47,14 @@ Present the breakdown as a numbered list. Per slice show: **Title**, **Blocked b
 right (too coarse / too fine)? Are the dependencies correct? Merge or split any? Iterate
 until the user approves.
 
+### 4.5 Contract-completeness check (borrow: arxiv 2605.25665)
+Before publishing, treat each slice's acceptance criteria as an explicit **contract**: every
+behavior the slice promises must map to ≥1 clause, and every clause must be independently
+verifiable (checkable without seeing the implementation). A promised behavior with **no clause
+is contract incompleteness** — the top deployment failure source in the paper; close it here,
+not in review. Flag any clause that no L4 `review` lens can verify and hand that gap to
+`review`'s coverage pass.
+
 ### 5. Publish
 For each approved slice, write an issue with the template below and mark it
 `ready-for-agent` (these are AFK-ready). Publish in dependency order. Do NOT modify the
@@ -61,9 +69,10 @@ The end-to-end behavior of this slice, not layer-by-layer implementation. No fil
 or code snippets (exception: a prototype-derived decision snippet — trim to the
 decision-rich part).
 
-## Acceptance criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
+## Contract (acceptance criteria as independently-verifiable clauses)
+Each clause = an observable behavior a verifier can check WITHOUT reading the implementation.
+- [ ] Clause 1 — <observable behavior + how it is verified>
+- [ ] Clause 2 — …
 
 ## Blocked by
 Reference to the blocking slice, or "None — can start immediately".

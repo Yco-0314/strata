@@ -55,6 +55,15 @@ trust boundaries). Then **variant-hunt**: grep the codebase for the same pattern
 one finding usually has siblings. Use CodeQL / Semgrep / SARIF if available; otherwise reason
 from the diff. Report by severity with file:line.
 
+## Coverage pass — the verification boundary (borrow: arxiv 2605.25665)
+
+After the three lenses, run one explicit check the lenses can miss: **what changed behavior does
+NO lens own?** List each contract clause / changed behavior and the lens that verifies it; any
+behavior with **no owning lens is a verification-boundary gap** (a documented top failure mode —
+bugs slip through exactly where no verifier is responsible). Also flag any contract clause from
+`to-issues` that no lens can check — that is contract-incompleteness surfacing at review time.
+Report uncovered behaviors as `boundary:` findings at HIGH unless clearly trivial.
+
 ## Output
 
 Merge the three lenses into one list, **each finding tagged `[TIER] <lens>-<category-slug>`** —
