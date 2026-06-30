@@ -49,9 +49,15 @@ actually work, with numbers.**
 ## Install
 
 ```bash
-# Claude Code (full framework) — symlinks 21 skills into ~/.claude/skills
+# Claude Code — RECOMMENDED: install as a namespaced plugin (skills become strata:<name>,
+# so they never collide with skills you already have from other repos/plugins)
+claude plugin marketplace add <path-or-git-url-to-this-repo>
+claude plugin install strata@strata
+# then optionally wire the two hooks into ~/.claude/settings.json (snippet below)
+
+# Alternative (flat install into ~/.claude/skills) — only if you have NO same-named skills;
+# this overwrites colliding names, so prefer the plugin route above.
 scripts/install.sh --apply
-# then wire the two hooks into ~/.claude/settings.json (SessionStart + PostToolUse) — snippet below
 
 # Codex — ~/.agents/skills; add ponytail to a project's .agents/AGENTS.md for always-on
 scripts/install.sh --host codex --apply

@@ -6,72 +6,30 @@
   },
   "metadata": {
     "description": "Layered meta-framework combining ponytail (behavioral nudge), superpowers (process engine), and mattpocock/skills (composable toolbox) by altitude. See ADR 0001.",
-    "version": "0.0.1",
-    "status": "draft-skeleton",
-    "note": "Per-layer skills arrays are populated as each layer is built (build order in CONTEXT-MAP.md). strict:false because skill dirs do not exist yet."
+    "version": "0.0.1"
   },
   "plugins": [
     {
-      "name": "l0-constitution",
-      "description": "Always-on minimal-code behavioral nudge. The only resident layer; governs solution size. Auto-fires (mode-filtered).",
-      "source": "./",
+      "name": "strata",
+      "description": "Strata \u2014 self-measuring skills framework (L0\u2013L6): ponytail constitution, complexity router, grilling, planning, TDD/subagent execution, 3-lens review, debugging, verification, and the L5 measurement layer (skill-eval/drift-eval/skill-validator/improve-loop).",
+      "source": ".",
       "strict": false,
       "skills": [
         "./skills/using-architect",
-        "./skills/l0-constitution/ponytail"
-      ]
-    },
-    {
-      "name": "l1-alignment",
-      "description": "Pin intent and vocabulary before building: grilling, domain modeling, CONTEXT.md glossary, and the complexity router.",
-      "source": "./",
-      "strict": false,
-      "skills": [
+        "./skills/l0-constitution/ponytail",
         "./skills/l1-alignment/complexity-router",
         "./skills/l1-alignment/grilling",
-        "./skills/l1-alignment/domain-modeling"
-      ]
-    },
-    {
-      "name": "l2-planning",
-      "description": "Spec to plan to issues. User-invoked: to-issues (lightweight default) and writing-plans (heavyweight opt-in).",
-      "source": "./",
-      "strict": false,
-      "skills": [
+        "./skills/l1-alignment/domain-modeling",
         "./skills/l2-planning/to-prd",
         "./skills/l2-planning/to-issues",
-        "./skills/l2-planning/writing-plans"
-      ]
-    },
-    {
-      "name": "l3-execution",
-      "description": "Subagent dispatch, merged TDD (dialed rigor), and worktree isolation. User-invoked.",
-      "source": "./",
-      "strict": false,
-      "skills": [
+        "./skills/l2-planning/writing-plans",
         "./skills/l3-execution/subagent-driven-development",
         "./skills/l3-execution/tdd",
-        "./skills/l3-execution/using-git-worktrees"
-      ]
-    },
-    {
-      "name": "l4-review",
-      "description": "Three-lens review (correctness, over-engineering, security), merged debugging, and the verification evidence gate. Discipline skills auto-fire.",
-      "source": "./",
-      "strict": false,
-      "skills": [
+        "./skills/l3-execution/using-git-worktrees",
         "./skills/l4-review/review",
         "./skills/l4-review/debugging",
         "./skills/l4-review/verification-before-completion",
-        "./skills/l4-review/finishing-a-development-branch"
-      ]
-    },
-    {
-      "name": "l5-meta",
-      "description": "Skill authoring + quantitative eval loop + lessons.md self-improvement. Borrows skill-creator's run_loop.",
-      "source": "./",
-      "strict": false,
-      "skills": [
+        "./skills/l4-review/finishing-a-development-branch",
         "./skills/l5-meta/writing-skills",
         "./skills/l5-meta/skill-eval",
         "./skills/l5-meta/drift-eval",
