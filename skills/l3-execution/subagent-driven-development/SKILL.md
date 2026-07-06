@@ -33,11 +33,15 @@ Fresh context per task = no pollution; the review order prevents over/under-buil
    may ask questions before *and* during — answer fully before it proceeds.
 2. Implementer **follows `tdd`** (full mode for non-trivial logic), commits, self-reviews.
 3. **Spec-compliance reviewer** (tier: **Opus**, tools **`[Read, Grep, Glob]`** — read-only
-   so it structurally cannot edit). Confirms the code matches the spec — nothing missing,
-   nothing extra. Issues → same implementer fixes → **re-review**. Do not proceed on "close
-   enough".
-4. **Code-quality reviewer** (Opus, read-only) — only after spec is ✅ (order matters). Runs
-   the L4 over-engineering + correctness lenses. Issues → implementer fixes → re-review.
+   so it structurally cannot edit), bound by the **L4 reviewer contract**
+   (`skills/l4-review/review/reviewer-contract.md`): default-REJECT, evidence = file:line it
+   read itself (the implementer's "tests pass" is not evidence), last line
+   `VERDICT: APPROVE|REJECT|ESCALATE`, no verdict = REJECT. Confirms the code matches the
+   spec — nothing missing, nothing extra. Issues → same implementer fixes → **re-review**.
+   Do not proceed on "close enough".
+4. **Code-quality reviewer** (Opus, read-only, same contract) — only after spec is ✅ (order
+   matters). Runs the L4 over-engineering + correctness lenses. Issues → implementer fixes →
+   re-review.
 5. Mark complete.
 
 ## Parallel fan-out (independent domains only)

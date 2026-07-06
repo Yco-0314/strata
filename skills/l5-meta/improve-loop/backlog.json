@@ -90,6 +90,54 @@
       "resolution": "2026-06-27: shipped \u2014 review coverage pass: after the 3 lenses, flag behavior no lens owns (verification-boundary gap) + any to-issues contract clause no lens can check. Gate-type addition; review-quality held (skill-validator)."
     },
     {
+      "id": "loopeng-eval-artifacts",
+      "target": "skill-eval + improve-loop (L5)",
+      "status": "resolved",
+      "hypothesis": "Persist per-case transcripts and a structured JSONL run record (runs/log.jsonl), so improve-loop's transcript-feedback reads real artifacts instead of re-running, and the machine record leaves lessons.md. JSONL convention from cobusgreyling/loop-engineering's loop-run-log (2026-07-06 research); fixes the known gap that run.mjs discarded baseOut/skillOut after grading.",
+      "ship_test": "A run writes <case>.{baseline,skill}.txt + one log.jsonl line; loop.mjs reads its Δ/gate from the log, not stdout; an all-errored run still records gate:ERROR.",
+      "resolution": "2026-07-06: shipped. run.mjs writes runs/<stamp>-<set>/ transcripts + always-appended log.jsonl record; loop.mjs reads the fresh record (crash before record -> ERROR) and appends a measure-run line instead of touching lessons.md. Proven end-to-end with a stubbed claude (happy + all-errored paths); self-tests extended; transcript dirs gitignored, log tracked."
+    },
+    {
+      "id": "loopeng-loop-guard",
+      "target": "new hook (hooks/loop-guard.mjs)",
+      "status": "resolved",
+      "hypothesis": "Mechanize debugging's '3+ failed fixes -> question the architecture' prose rule: PostToolUse:Bash hook normalizes failing check-command output into an error signature (paths/lines/timestamps/counts stripped), warns on same-signature >=3 (stall, with an 'Already tried' excerpt) or >=5 consecutive fails; success resets. Circuit breaker from loop-engineering's loop-context (its one substantial artifact); reset-on-success from 12-factor-agents; warn-only from session-orchestrator.",
+      "ship_test": "Two failures differing only in path/line/duration hash to one signature; third occurrence injects the stall warning; a green run resets the ledger.",
+      "resolution": "2026-07-06: shipped. Pure functions (isCheckCommand/failed/signature/update) with 15 self-test asserts; live stdin integration test passed (stall at 3x across command variants, reset-on-success, non-check commands ignored). Ledger in tmpdir per session — never in the project. Warn-only; any error exits 0."
+    },
+    {
+      "id": "loopeng-reviewer-contract",
+      "target": "review (L4) + subagent-driven-development (L3)",
+      "status": "resolved",
+      "hypothesis": "Operationalize review's lens-dispatch (the recorded follow-up) with a binding verifier contract: default-REJECT, evidence = file:line the reviewer read itself (implementer narrative is not evidence; execution claims go to verification-before-completion), last-line VERDICT: APPROVE|REJECT|ESCALATE, no verdict = REJECT. From loop-engineering's verifier agents (default-REJECT), loopflow (fail-closed last line), PlanWeave (bad-work vs cannot-judge split).",
+      "ship_test": "review and SDD reviewers spawn from one written template; a reply without a parseable last-line verdict counts as REJECT.",
+      "resolution": "2026-07-06: shipped — skills/l4-review/review/reviewer-contract.md (spawn template + verdict protocol + orchestrator duties); review SKILL.md dispatch section + SDD steps 3/4 bind to it. Gate-type addition (no single-shot Δ); closes the lens-dispatch follow-up."
+    },
+    {
+      "id": "loopeng-lessons-layering",
+      "target": "lessons.md + scripts/lessons-index.mjs",
+      "status": "resolved",
+      "hypothesis": "Split machine records (runs/log.jsonl) from human conclusions (lessons.md) and give the [[tag]] markers a consumer, so 25KB of append-only prose stays greppable. Run-log/curated separation from loop-engineering's STATE.md pruning + snarktank/ralph's promotion area.",
+      "ship_test": "lessons-index groups entries by [[tag]]; improve-loop documents the tag convention.",
+      "resolution": "2026-07-06: shipped — machine appends moved to log.jsonl (see loopeng-eval-artifacts); scripts/lessons-index.mjs (pure parser, self-tested, in CI) lists entries per tag; improve-loop Record step documents [[skill-name]] tagging. Pruning stays a human step (hooks are model-free)."
+    },
+    {
+      "id": "loopeng-autonomy-graduation",
+      "target": "improve-loop (L5)",
+      "status": "resolved",
+      "hypothesis": "Autonomous mode needs an explicit graduation gate (proven run history) instead of 'CI with an API key is cleanest'. The only substantial part of loop-engineering's L1->L3 grading: L3 must be earned by proven usage records.",
+      "ship_test": "SKILL.md states checkable enablement criteria tied to runs/log.jsonl.",
+      "resolution": "2026-07-06: shipped — improve-loop Autonomous mode now requires: >=3 consecutive clean human-triggered runs in the ledger, transcript-feedback actually exercised, tokens field present. The never-auto-edit ceiling stays regardless."
+    },
+    {
+      "id": "loopeng-tokens-field",
+      "target": "skill-eval (L5)",
+      "status": "resolved",
+      "hypothesis": "Record real token usage in the run record where the API path reports it (j.usage), null on the CLI path — never invent a number (contra loop-engineering's hardcoded cost constants). Prerequisite for the graduation gate's cost criterion.",
+      "ship_test": "API-path records carry {input,output} sums; CLI-path records carry tokens:null.",
+      "resolution": "2026-07-06: shipped — runApi accumulates j.usage into the record's tokens field; CLI path stays null. Self-tested (passthrough + default)."
+    },
+    {
       "id": "paper-deployment-calibration",
       "target": "improve-loop (L5) \u2014 directional",
       "status": "pending",

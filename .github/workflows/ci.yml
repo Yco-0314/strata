@@ -22,6 +22,8 @@ jobs:
           node skills/l5-meta/skill-eval/run.mjs --self-test
           node skills/l5-meta/improve-loop/loop.mjs --self-test
           node skills/l5-meta/skill-validator/budget.mjs --self-test
+          node scripts/lessons-index.mjs --self-test
+          node hooks/loop-guard.mjs --selftest
           node hooks/skill-postedit.mjs --selftest
           node hooks/session-start.mjs --selftest
 

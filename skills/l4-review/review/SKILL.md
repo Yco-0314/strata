@@ -10,7 +10,7 @@ metadata:
   layer: L4
   role: discipline
   invocation: model-invoked-discipline
-  provenance: "Three lenses, one entry: the two-stage spec+quality idea from superpowers (correctness); ponytail-review (over-engineering); Trail of Bits diff-scoped differential review (security). Read-only reviewer preset (VoltAgent), Opus tier (wshobson)."
+  provenance: "Three lenses, one entry: the two-stage spec+quality idea from superpowers (correctness); ponytail-review (over-engineering); Trail of Bits diff-scoped differential review (security). Read-only reviewer preset (VoltAgent), Opus tier (wshobson). Coverage pass from arxiv 2605.25665; verdict protocol in reviewer-contract.md."
 ---
 
 # Review — L4, three lenses behind one entry
@@ -28,7 +28,6 @@ run them in parallel and merge findings. `review` lists findings; it does not ap
 2. **Then code quality:** bugs, edge cases, error handling, data flow, concurrency, perf.
 
 Report each finding as **Critical / Important / Minor** with file:line and the why.
-"Distrust the report" — verify each claim against the actual code before trusting it.
 
 ## Lens 2 — Over-engineering (the ponytail lens)
 
@@ -55,20 +54,29 @@ trust boundaries). Then **variant-hunt**: grep the codebase for the same pattern
 one finding usually has siblings. Use CodeQL / Semgrep / SARIF if available; otherwise reason
 from the diff. Report by severity with file:line.
 
-## Coverage pass — the verification boundary (borrow: arxiv 2605.25665)
+## Coverage pass — the verification boundary
 
 After the three lenses, run one explicit check the lenses can miss: **what changed behavior does
 NO lens own?** List each contract clause / changed behavior and the lens that verifies it; any
-behavior with **no owning lens is a verification-boundary gap** (a documented top failure mode —
-bugs slip through exactly where no verifier is responsible). Also flag any contract clause from
+behavior with **no owning lens is a verification-boundary gap** (the documented top failure
+mode). Also flag any contract clause from
 `to-issues` that no lens can check — that is contract-incompleteness surfacing at review time.
 Report uncovered behaviors as `boundary:` findings at HIGH unless clearly trivial.
+
+## Dispatch & verdict — the reviewer contract
+
+Spawn each lens with the template in `reviewer-contract.md` (this dir). Non-negotiable: default
+stance **REJECT** — the diff carries the burden of proof; evidence = file:line the reviewer read
+itself (the implementer's narrative is not evidence; execution claims are settled by
+`verification-before-completion` re-running them); every reviewer's LAST line is
+`VERDICT: APPROVE | REJECT | ESCALATE` — no parseable verdict = REJECT (fail-closed). ESCALATE
+means "cannot decide read-only" (needs execution or a human), distinct from "defective".
 
 ## Output
 
 Merge the three lenses into one list, **each finding tagged `[TIER] <lens>-<category-slug>`** —
 tier ∈ CRITICAL / HIGH / MEDIUM / LOW, slug e.g. `security-authz`, `correctness-edge-case`,
-`overeng-stdlib` (vercel impact-tiered convention). The list is sorted highest-impact-first, so a
-reader addresses the worst thing first and a CI gate can fail on `CRITICAL`/`HIGH` only. For each:
+`overeng-stdlib` (vercel impact-tiered convention). Sorted highest-impact-first, so a CI gate
+can fail on `CRITICAL`/`HIGH` only. For each:
 the `[TIER] slug`, file:line, the lens, and the fix. Then hand to `verification-before-completion`
 before anyone claims the review is clean, and to `finishing-a-development-branch` (L4) to integrate.

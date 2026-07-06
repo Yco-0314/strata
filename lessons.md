@@ -352,3 +352,42 @@ feature outcomes, not synthetic skill-eval. The structural gap the paper exposes
 own skills, not production outcomes. Needs a real deployed project -> stays pending/directional.
 
 Follow-ups for backlog: operationalize review's lens-dispatch; move inline arxiv refs to provenance.
+
+## 2026-07-06 — loop-engineering research → 6 borrows shipped (the "loop" batch)
+
+Multi-agent research on cobusgreyling/loop-engineering (5.8k stars) + 24 verified GitHub
+loop-adjacent repos. Verdict on the source repo: marketing > engineering (existence-check audit,
+AI-free dogfood, self-certifying score) — but 3-4 mechanisms are real and land on gaps this
+ledger already admitted. Full report + don't-copy list in the session research artifacts.
+
+**SHIPPED (6, all backlog-recorded as loopeng-*):**
+- eval artifacts: skill-eval persists per-case transcripts (runs/<stamp>-<set>/) + always-writes a
+  JSONL record to runs/log.jsonl; loop.mjs reads the record (not stdout) and machine appends LEAVE
+  this file — lessons.md is human-only from here. Fixes the known transcript-feedback gap
+  (baseOut/skillOut never existed on disk). [[skill-eval]] [[improve-loop]]
+- loop-guard hook: error-signature circuit breaker on Bash check commands (same-sig ≥3 → stall
+  warning + "Already tried"; ≥5 consecutive → no-progress; green run resets). Mechanizes
+  debugging's 3+-failed-fixes rule; warn-only, tmpdir ledger, 15 selftest asserts + live pipe
+  test. [[debugging]]
+- reviewer contract: review/reviewer-contract.md — default-REJECT, evidence = file:line the
+  reviewer read itself, execution claims route to verification-before-completion, last-line
+  VERDICT protocol (missing = REJECT). Closes the lens-dispatch follow-up; SDD reviewers bound to
+  the same contract. [[review]] [[subagent-driven-development]] [[verification-before-completion]]
+- lessons layering: scripts/lessons-index.mjs gives [[tag]] a consumer; tag convention documented
+  in improve-loop. [[improve-loop]]
+- autonomy graduation: unattended improve-loop now has checkable enablement criteria (≥3 clean
+  human runs in the ledger, transcript-feedback exercised, tokens recorded). [[improve-loop]]
+- tokens field: real API usage in the run record, null on CLI — never an invented constant (the
+  anti-pattern loop-engineering's loop-cost embodies). [[skill-eval]]
+
+**NOT borrowed (deliberate):** existence-scoring/badges, cost-constant arithmetic, LOOP.md/STATE.md
+scaffolding-per-pattern, honor-system "binding" prose, multi-harness trees, forced-skill-activation
+hooks (conflicts ADR 0001). Rationale per item in the research report's don't-copy list.
+
+**HONEST SCOPE:** no authenticated eval ran (subscription 403 unchanged) — evidence is self-tests,
+a stubbed end-to-end run of the eval pipeline, and a live stdin test of the hook. The doc changes
+are gate-type (no single-shot Δ to chase). Both prior follow-ups closed: lens-dispatch
+operationalized; inline arxiv refs moved to provenance (debugging, review).
+
+Follow-ups: run one real measure-run to seed runs/log.jsonl; consider a drift-eval scenario where
+loop-guard's warning should fire; paper-deployment-calibration stays the open structural gap.
