@@ -33,7 +33,9 @@ const readLog = () => existsSync(LOG) ? readFileSync(LOG, 'utf8') : ''
 function runSet(setPath) {
   const before = readLog()
   try {
-    execFileSync('node', [RUNNER, setPath], { encoding: 'utf8', timeout: 600000, maxBuffer: 10 * 1024 * 1024 })
+    // Per-set budget scales with EVAL_N: N reps × 2 arms × judge calls (reasoning judges are slow).
+    const reps = Math.max(1, parseInt(process.env.EVAL_N || '1', 10))
+    execFileSync('node', [RUNNER, setPath], { encoding: 'utf8', timeout: 600000 * reps, maxBuffer: 10 * 1024 * 1024 })
   } catch { /* exit 2 on all-errored — the ERROR record still landed in the log */ }
   return newRecord(before, readLog())
 }

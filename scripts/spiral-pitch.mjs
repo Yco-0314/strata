@@ -12,9 +12,10 @@
 // is zero is not measuring — it never rejects anything.
 //
 // Why the ledger, not git: strata's git history is squashed (~5 commits); the real cycle history
-// lives in the dated resolutions. runs/log.jsonl (automated eval evidence) is still empty
-// (evals are auth-blocked), so classification currently reads human-written resolution prose —
-// a weak, self-reported signal, flagged as such. See docs/spiral-engineering (research).
+// lives in the dated resolutions. Since 2026-07-06 a SECOND, automated evidence source exists:
+// runs/log.jsonl (real eval records, DeepSeek-unblocked) — the measured layer below reads it
+// (latest record per set@model, since Δ is model-relative). Ledger classes stay human-tagged;
+// the measured layer is the part that is no longer self-reported.
 //   node scripts/spiral-pitch.mjs             # strata's pitch curve, per-item classification
 //   node scripts/spiral-pitch.mjs --self-test # prove the classifier + math (no I/O)
 
@@ -62,6 +63,27 @@ export function classify(text = '') {
   if (/Δ\s*[+-]?\s*[1-9]\d*\s*%|delta\s*\+?\s*[1-9]\d*\s*%|ships\b|moves the number|no regression/i.test(text)) return 'ship'
   if (/gate-type|gate,|a gate|no single-shot|no Δ|no delta|built |added |shipped/i.test(t) || /shipped/i.test(text)) return 'gate'
   return 'unknown'
+}
+
+// Pure: runs/log.jsonl text → the measured-evidence summary. Latest eval record per (set, model)
+// wins (file order = append order = chronological); Δ is model-relative (2026-07-06 finding), so
+// records never merge across models. Malformed lines are skipped, never fatal.
+export function measuredFromLog(text = '') {
+  const recs = text.trim().split('\n').filter(Boolean)
+    .map(l => { try { return JSON.parse(l) } catch { return null } }).filter(Boolean)
+  const evals = recs.filter(r => r.kind === 'eval')
+  const latest = {}
+  for (const r of evals) latest[`${r.set}@${r.model}`] = r
+  const rows = Object.values(latest).sort((a, b) => (b.delta ?? -999) - (a.delta ?? -999))
+  const moved = rows.filter(r => r.delta > 0)
+  return {
+    records: evals.length,
+    measureRuns: recs.filter(r => r.kind === 'measure-run').length,
+    sets: rows.length,
+    moved: moved.length,
+    deltaSum: moved.reduce((s, r) => s + r.delta, 0),
+    rows,
+  }
 }
 
 // Pure: ISO-week key (YYYY-Www) for bucketing, from a YYYY-MM-DD string.
@@ -159,6 +181,20 @@ function selfTest() {
   const tagged = [{ status: 'resolved', id: 't', spiralClass: 'null', resolution: '2026-06-27: SHIPS +25%' }]
   ok(computePitch(tagged).byClass.null === 1, 'spiralClass tag overrides prose classification')
   ok(computePitch([{ status: 'resolved', id: 'u', spiralClass: 'bogus', resolution: '2026-06-27: built x' }]).byClass.gate === 1, 'invalid tag falls back to prose')
+  const log = [
+    '{"kind":"eval","set":"a","model":"m1","delta":29,"gate":"PASS","n":1}',
+    'not json — skipped',
+    '{"kind":"eval","set":"a","model":"m1","delta":43,"gate":"PASS","n":1}',
+    '{"kind":"eval","set":"b","model":"m1","delta":0,"gate":"NO MOVEMENT","n":1}',
+    '{"kind":"eval","set":"a","model":"m2","delta":-10,"gate":"NO MOVEMENT","n":1}',
+    '{"kind":"measure-run","rows":[]}',
+  ].join('\n')
+  const m = measuredFromLog(log)
+  ok(m.records === 4 && m.measureRuns === 1, 'log records counted, malformed line skipped')
+  ok(m.sets === 3, 'latest per set@model: a@m1, b@m1, a@m2')
+  ok(m.rows.find(r => r.set === 'a' && r.model === 'm1').delta === 43, 'latest record wins (a@m1 → 43, not 29)')
+  ok(m.moved === 1 && m.deltaSum === 43, 'Δ sum counts only moved (Δ>0), per model')
+  ok(measuredFromLog('').records === 0, 'empty log → zero, not crash')
   console.log(bad ? '\nself-test FAIL' : '\nself-test PASS')
   process.exit(bad ? 1 : 0)
 }
@@ -166,6 +202,8 @@ function selfTest() {
 function report() {
   const backlog = JSON.parse(readFileSync(resolve(ROOT, 'skills/l5-meta/improve-loop/backlog.json'), 'utf8'))
   const p = computePitch(backlog.items || [])
+  let m = { records: 0, measureRuns: 0, sets: 0, moved: 0, deltaSum: 0, rows: [] }
+  try { m = measuredFromLog(readFileSync(resolve(ROOT, 'skills/l5-meta/skill-eval/runs/log.jsonl'), 'utf8')) } catch { /* no runs yet */ }
   console.log('spiral-pitch — strata second-order self-improvement (source: backlog.json resolutions)\n')
   for (const e of p.events) console.log(`  ${e.date}  ${e.class.toUpperCase().padEnd(7)} ${e.id}`)
   if (p.byClass.unknown) console.log(`\n  ⚠ ${p.byClass.unknown} unclassified (resolution prose lacks an evidence marker — audit these)`)
@@ -178,10 +216,20 @@ function report() {
   console.log(`  worklist      ${p.pending} pending (future pitch, not yet counted)`)
   console.log('\n  by ISO week:')
   for (const [w, c] of Object.entries(p.byWeek).sort()) console.log(`    ${w}  total ${c.total}  (ship ${c.ship} · gate ${c.gate} · null ${c.null})`)
+  if (m.records) {
+    console.log(`\n  measured layer (runs/log.jsonl — automated, NOT self-reported; latest per set@model):`)
+    for (const r of m.rows) {
+      const d = r.delta === null ? '  n/a' : `${r.delta >= 0 ? '+' : ''}${r.delta}%`.padStart(5)
+      console.log(`    ${(r.set + '@' + r.model).padEnd(42)} Δ${d}  ${r.gate}${r.n > 1 ? `  (N=${r.n})` : ''}`)
+    }
+    console.log(`    Σ measured Δ ${m.deltaSum >= 0 ? '+' : ''}${m.deltaSum}% across ${m.moved}/${m.sets} set@model moved · ${m.records} eval records · ${m.measureRuns} measure-run(s)`)
+  }
   const untagged = p.events.filter(e => !e.tagged).length
-  console.log('\n  Honest limits: class is human-tagged (spiralClass) — auditable but self-reported'
+  console.log('\n  Honest limits: ledger class is human-tagged (spiralClass) — auditable but self-reported'
     + (untagged ? `; ${untagged} item(s) fell back to fragile prose-mining` : '') + ';')
-  console.log('  runs/log.jsonl is empty (evals auth-blocked) so no automated Δ evidence yet; N is small')
+  console.log(m.records
+    ? `  measured Δ covers eval'd skills only, is judge-model-sensitive (see judge==model confound), and is per-model.`
+    : '  runs/log.jsonl has no eval records yet, so no automated Δ evidence; classification is prose-only.')
   console.log('  (SOC / avalanche-distribution analysis needs many more cycles — premature here).')
 }
 
