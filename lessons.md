@@ -495,3 +495,15 @@ load-bearing everywhere, including where sonnet had converged.
   each with a death condition, narrow-claim prior art, anti-patterns, boundaries, roadmap
   (MDL → ADR calibration → design-tunnel → replication). The dissemination artifact the plan
   was missing — now citable because the numbers are real. [[spiral-pitch]]
+
+## 2026-07-06 — spiral-engineering extracted to a standalone public repo
+
+github.com/Yco-0314/spiral-engineering — the discipline decoupled from strata's skill web, as
+demanded by its own thesis (a spec married to one framework is a framework doc, not a spec).
+Ships: SPEC v0.1 (falsifiability contract + 6 laws with death conditions), the ledger schema
+(changes.jsonl + evals.jsonl — the interchange format IS the project), three portable zero-dep
+instruments (pitch / dark-room / derive-difficulty, self-tested), the strata adapter (~30
+lines), and strata's REAL ledgers as the shipped exhibit — CI replays the canonical table and
+fails if Σ +406% stops reproducing. strata's role inverts: reference implementation #1.
+Strata-only mechanisms (loop-guard, reviewer contract, graduation) stay here, described in the
+spec only as conformance patterns. [[spiral-pitch]]

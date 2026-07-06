@@ -1,5 +1,11 @@
 # Spiral Engineering — spec v0.1 (draft)
 
+> **The canonical spec now lives at [github.com/Yco-0314/spiral-engineering](https://github.com/Yco-0314/spiral-engineering)**
+> — a standalone project: the ledger schema, portable instruments, and this repo's real data as
+> the shipped exhibit. strata is its reference implementation #1. This file remains as the
+> strata-local companion (it references strata-specific paths the standalone spec deliberately
+> does not).
+
 > A loop returns to where it started. A spiral doesn't — and can prove it.
 
 **Definition.** Prompt engineering shaped one call; context engineering shaped one session;
