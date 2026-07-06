@@ -94,6 +94,10 @@ node scripts/check-rule-copies.mjs                    # invariant drift gate
 A model runner is the local `claude` CLI, or any Anthropic-compatible endpoint via
 `ANTHROPIC_API_KEY` / `ANTHROPIC_BASE_URL` (DeepSeek etc.). All scripts ship a `--self-test`.
 
+The measurement discipline behind this — second-order self-improvement with evidence-gated
+instruments (pitch, grounding, dark-room, measured difficulty) — is specified in
+[docs/spiral-engineering.md](docs/spiral-engineering.md).
+
 ## Honest limits
 
 - **Capable-model dependency.** The disciplines are validated on Claude-class models; on weak

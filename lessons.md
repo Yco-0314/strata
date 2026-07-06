@@ -483,3 +483,15 @@ coverage). Still open: difficulty tags for the other 6 sets should now be DERIVE
 measured baseline rates rather than hand-guessed; tdd has 1 errored case (judge undecidable ×5) —
 minor, recorded. The full-population honest read: on deepseek-chat, strata's skill layer is
 load-bearing everywhere, including where sonnet had converged.
+
+## 2026-07-06 — measured difficulty derivation + spiral-engineering spec v0.1
+
+- `scripts/derive-difficulty.mjs`: eval difficulty tags now DERIVED from measured baseline
+  verdicts (32/35 derived, 3 confirmed, **4 hand guesses overturned by data**), each set stamped
+  with a traceable `difficultyBasis`. dark-room: 7/7 tagged · 0 dark rooms on deepseek-chat.
+  Guessing is worse than measuring once measuring costs cents. [[skill-eval]]
+- `docs/spiral-engineering.md` (spec v0.1): the falsifiability contract (pitch/null-ratio/
+  grounding + eigenform disambiguation), 10 instruments, the canonical-table evidence, 6 laws
+  each with a death condition, narrow-claim prior art, anti-patterns, boundaries, roadmap
+  (MDL → ADR calibration → design-tunnel → replication). The dissemination artifact the plan
+  was missing — now citable because the numbers are real. [[spiral-pitch]]
