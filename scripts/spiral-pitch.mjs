@@ -28,6 +28,31 @@ const invokedDirectly = !!process.argv[1] && import.meta.url === pathToFileURL(p
 // Pure: first YYYY-MM-DD in a string, or null.
 export const firstDate = (s = '') => (s.match(/\b(20\d\d-\d{2}-\d{2})\b/) || [])[1] || null
 
+// Pure: the first measured percent in a resolution (the headline Δ), or null. This is the ONLY
+// honest magnitude available — count-weighted pitch is the vanity trap (cf. GitHub star-velocity;
+// 2026-07 web review). GATE/NULL changes carry no single-shot Δ, so we never invent one for them.
+export function extractDelta(text = '') {
+  const norm = text.replace(/−/g, '-') // unicode minus → ASCII
+  const pct = norm.match(/([+-]?\d+)\s*%/)
+  if (pct) return parseInt(pct[1], 10)
+  const bare = norm.match(/Δ\s*([+-]?\d+)\b/) || norm.match(/\bdelta\s*([+-]?\d+)\b/i)
+  return bare ? parseInt(bare[1], 10) : null
+}
+
+// Pure: was this self-change triggered by an EXTERNAL signal (a borrow/paper/correction) or
+// self-generated? The Data Processing Inequality makes this load-bearing: a closed loop cannot
+// learn more than its external signal carries (2026-07 web review confirmed the empirical 8–13%
+// oracle gap for un-grounded self-improvement). Provenance isn't in one field — some items record
+// it in the hypothesis ("From X"), some in the resolution — so we scan both, but only for NAMED
+// sources, never a bare "/" (resolutions carry internal file paths like skills/l5-meta) or a bare
+// lowercase "from" (resolutions say "moved appends from lessons.md").
+export function grounding(item) {
+  const named = /arxiv|loop-engineering|superpowers|karpathy|anthropic|\bGSD\b|vercel|skill-tools|agent-ecosystem|trail of bits|borrow/i
+  const hyp = item.hypothesis || ''
+  if (/\bfrom\s+\S/i.test(hyp) || named.test(hyp) || named.test(item.resolution || '')) return 'external'
+  return 'internal'
+}
+
 // Pure: classify a resolution's EVIDENCE → ship | gate | null | unknown.
 // Order matters: a recorded correction/convergence (null) can also contain a Δ number, so the
 // null signals are tested first — the honest "don't chase this" verdict wins over the raw number.
@@ -60,7 +85,8 @@ export function computePitch(items) {
     // forgot to tag it (the fallback is fragile — adversarial prose defeats regex, which is
     // exactly why the structured field exists).
     const klass = ['ship', 'gate', 'null'].includes(i.spiralClass) ? i.spiralClass : classify(i.resolution || '')
-    return { id: i.id, date: d, class: klass, tagged: !!i.spiralClass }
+    const delta = klass === 'ship' ? extractDelta(i.resolution || '') : null
+    return { id: i.id, date: d, class: klass, tagged: !!i.spiralClass, delta, ground: grounding(i) }
   }).filter(e => e.date).sort((a, b) => a.date.localeCompare(b.date))
 
   const byClass = { ship: 0, gate: 0, null: 0, unknown: 0 }
@@ -78,12 +104,19 @@ export function computePitch(items) {
   const spanWeeks = Math.max(spanDays / 7, 1 / 7) // floor at one day so a single-day burst isn't ÷0
   const verified = events.length - byClass.unknown
 
+  const measured = events.filter(e => e.class === 'ship' && e.delta > 0)
+  const external = events.filter(e => e.ground === 'external').length
+
   return {
     events, byClass, byWeek, first, last, spanDays,
     verified,
     pending: items.filter(i => i.status === 'pending').length,
     pitchPerWeek: +(verified / spanWeeks).toFixed(1),
     nullRatio: verified ? +(byClass.null / verified).toFixed(2) : 0,
+    deltaThroughput: measured.reduce((s, e) => s + e.delta, 0), // honest magnitude (measured Δ only)
+    shipMeasured: measured.length,
+    external,
+    groundingRatio: events.length ? +(external / events.length).toFixed(2) : 0,
   }
 }
 
@@ -100,11 +133,17 @@ function selfTest() {
   ok(classify('Corrected → true Δ 0: Claude already verifies by default') === 'null', 'correction → null')
   ok(classify('reverted: no movement on the eval set') === 'null', 'revert → null')
   ok(classify('some prose with no evidence marker') === 'unknown', 'no marker → unknown')
+  ok(extractDelta('ponytail SHIPS: +25% at haiku, converges to 0% on sonnet') === 25, 'extractDelta takes headline +25 (not later 0%)')
+  ok(extractDelta('Δ +75% (≥ recorded +50%)') === 75, 'extractDelta Δ +75%')
+  ok(extractDelta('removes a documented failure, no percent') === null, 'extractDelta null when unmeasured')
+  ok(grounding({ hypothesis: 'From vercel-labs/find-skills. verified GitHub source' }) === 'external', 'cited source → external')
+  ok(grounding({ hypothesis: 'Current router cases are clear-cut; add borderline cases' }) === 'internal', 'self-generated eval design → internal')
+  ok(grounding({ hypothesis: 'From Sengupta et al. arxiv 2605.25665' }) === 'external', 'arxiv provenance → external')
   ok(isoWeek('2026-07-06') === isoWeek('2026-07-08'), 'same ISO week groups')
   const items = [
-    { status: 'resolved', id: 'a', resolution: '2026-06-27: ponytail SHIPS +25%' },
-    { status: 'resolved', id: 'b', resolution: '2026-06-27: built a gate (no Δ)' },
-    { status: 'resolved', id: 'c', resolution: '2026-07-06: converged, do not chase' },
+    { status: 'resolved', id: 'a', resolution: '2026-06-27: ponytail SHIPS +25%', hypothesis: 'From ponytail-review' },
+    { status: 'resolved', id: 'b', resolution: '2026-06-27: built a gate (no Δ)', hypothesis: 'internal tool' },
+    { status: 'resolved', id: 'c', resolution: '2026-07-06: converged, do not chase', hypothesis: 'internal eval design' },
     { status: 'pending', id: 'd', hypothesis: 'x' },
     { status: 'resolved', id: 'e', resolution: 'no date, ignored' },
   ]
@@ -114,6 +153,8 @@ function selfTest() {
   ok(p.pending === 1, 'pending counted separately')
   ok(p.spanDays === 9, '06-27 → 07-06 span is 9 days')
   ok(p.nullRatio === 0.33, 'null ratio = 1/3')
+  ok(p.deltaThroughput === 25 && p.shipMeasured === 1, 'Δ-throughput sums measured ship Δ only')
+  ok(p.external === 1 && p.groundingRatio === 0.33, 'grounding: 1 external (item a) of 3')
   // spiralClass overrides prose — the resolution says SHIP (+25%) but the tag says null, tag wins
   const tagged = [{ status: 'resolved', id: 't', spiralClass: 'null', resolution: '2026-06-27: SHIPS +25%' }]
   ok(computePitch(tagged).byClass.null === 1, 'spiralClass tag overrides prose classification')
@@ -130,7 +171,9 @@ function report() {
   if (p.byClass.unknown) console.log(`\n  ⚠ ${p.byClass.unknown} unclassified (resolution prose lacks an evidence marker — audit these)`)
   console.log(`\n  window        ${p.first} → ${p.last}  (${p.spanDays} days)`)
   console.log(`  verified      ${p.verified}   ship ${p.byClass.ship} · gate ${p.byClass.gate} · null ${p.byClass.null}`)
-  console.log(`  PITCH         ${p.pitchPerWeek} verified self-changes / week`)
+  console.log(`  cadence       ${p.pitchPerWeek} verified self-changes / week  (count-weighted — a RATE, not a magnitude)`)
+  console.log(`  Δ-throughput  +${p.deltaThroughput}%  (sum of MEASURED Δ, ${p.shipMeasured}/${p.byClass.ship} ship changes carry one — the honest magnitude; no invented weights)`)
+  console.log(`  grounding     ${Math.round(p.groundingRatio * 100)}% external-triggered (${p.external}/${p.verified})  (DPI ceiling on a closed loop; high = borrow-driven, not vacuum)`)
   console.log(`  null-ratio    ${p.nullRatio}   (0 = never rejects anything — suspicious; the spiral isn't measuring)`)
   console.log(`  worklist      ${p.pending} pending (future pitch, not yet counted)`)
   console.log('\n  by ISO week:')
