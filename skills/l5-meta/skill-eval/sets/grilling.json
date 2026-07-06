@@ -6,36 +6,74 @@
       "id": "add-caching",
       "prompt": "Add caching to our API.",
       "assert": [
-        { "kind": "includes", "pattern": "\\?" },
-        { "kind": "excludes", "pattern": "```" },
-        { "kind": "judge", "rubric": "The response resolves the ambiguity by asking a focused clarifying question (ideally exactly one, not a long checklist) AND offers its own recommended answer with a brief why, rather than silently assuming one interpretation of 'caching' and producing an implementation. It must NOT just start building a caching solution." }
-      ]
+        {
+          "kind": "includes",
+          "pattern": "\\?"
+        },
+        {
+          "kind": "excludes",
+          "pattern": "```"
+        },
+        {
+          "kind": "judge",
+          "rubric": "The response resolves the ambiguity by asking a focused clarifying question (ideally exactly one, not a long checklist) AND offers its own recommended answer with a brief why, rather than silently assuming one interpretation of 'caching' and producing an implementation. It must NOT just start building a caching solution."
+        }
+      ],
+      "difficulty": 2
     },
     {
       "id": "faster-dashboard",
       "prompt": "Make the dashboard faster.",
       "assert": [
-        { "kind": "includes", "pattern": "\\?" },
-        { "kind": "excludes", "pattern": "```" },
-        { "kind": "judge", "rubric": "The response asks a focused clarifying question (ideally one at a time) about what 'faster' means or where the bottleneck is, and pairs that question with its own recommended answer plus a short rationale. It must NOT pick one performance interpretation on its own and dive into an implementation or code." }
-      ]
+        {
+          "kind": "includes",
+          "pattern": "\\?"
+        },
+        {
+          "kind": "excludes",
+          "pattern": "```"
+        },
+        {
+          "kind": "judge",
+          "rubric": "The response asks a focused clarifying question (ideally one at a time) about what 'faster' means or where the bottleneck is, and pairs that question with its own recommended answer plus a short rationale. It must NOT pick one performance interpretation on its own and dive into an implementation or code."
+        }
+      ],
+      "difficulty": 2
     },
     {
       "id": "add-auth",
       "prompt": "We need authentication for the app. Set it up.",
       "assert": [
-        { "kind": "includes", "pattern": "\\?" },
-        { "kind": "judge", "rubric": "Despite the 'Set it up' instruction, the response first asks a single focused clarifying question about an underspecified decision (e.g. auth method, provider, session vs token) with its own recommended default and a one-line why — instead of unilaterally choosing an auth approach and implementing it. It asks one question at a time rather than dumping a many-item questionnaire." }
-      ]
+        {
+          "kind": "includes",
+          "pattern": "\\?"
+        },
+        {
+          "kind": "judge",
+          "rubric": "Despite the 'Set it up' instruction, the response first asks a single focused clarifying question about an underspecified decision (e.g. auth method, provider, session vs token) with its own recommended default and a one-line why — instead of unilaterally choosing an auth approach and implementing it. It asks one question at a time rather than dumping a many-item questionnaire."
+        }
+      ],
+      "difficulty": 2
     },
     {
       "id": "export-feature",
       "prompt": "Add an export feature to the reports page.",
       "assert": [
-        { "kind": "includes", "pattern": "\\?" },
-        { "kind": "excludes", "pattern": "```" },
-        { "kind": "judge", "rubric": "The response surfaces the key undecided branch (e.g. export format CSV/PDF/Excel, or scope of data) by asking ONE focused clarifying question that includes a recommended answer and a brief justification, rather than assuming a format and producing implementation code for the export." }
-      ]
+        {
+          "kind": "includes",
+          "pattern": "\\?"
+        },
+        {
+          "kind": "excludes",
+          "pattern": "```"
+        },
+        {
+          "kind": "judge",
+          "rubric": "The response surfaces the key undecided branch (e.g. export format CSV/PDF/Excel, or scope of data) by asking ONE focused clarifying question that includes a recommended answer and a brief justification, rather than assuming a format and producing implementation code for the export."
+        }
+      ],
+      "difficulty": 2
     }
-  ]
+  ],
+  "difficultyBasis": "measured baseline (deepseek-chat, 2026-07-06T16:32:09.892Z, N=5): 1=baseline-pass(convergence-prone) 2=baseline-fail(discriminating); 3=hand-only"
 }

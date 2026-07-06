@@ -164,6 +164,15 @@
       "resolution": "2026-07-06: shipped — optional `difficulty` field on eval cases + scripts/dark-room.mjs (pure coverage + dark-room verdict, self-tested, in CI). l0-ponytail tagged as the worked example (ok: 4 discriminating); the other 6 sets honestly flagged untagged, accruing when touched. Gate-type; the time-series ('is difficulty rising?') accrues once difficulty is tagged at case-add time."
     },
     {
+      "id": "measured-difficulty-derivation",
+      "spiralClass": "gate",
+      "target": "skill-eval sets + scripts/derive-difficulty.mjs",
+      "status": "resolved",
+      "hypothesis": "Difficulty is model-relative (2026-07-06: 4 of l0-ponytail's 7 hand tags were wrong for deepseek-chat — 'toy' debounce/deep-clone catch its baseline, 'realistic' fetch-user/ship-email pass unaided). So derive per-case tags from the MEASURED baseline majority verdict in runs/log.jsonl (1=baseline-pass/convergence-prone, 2=baseline-fail/discriminating; 3 stays hand-only), with a per-set difficultyBasis recording model+timestamp+N for traceability.",
+      "ship_test": "All 7 sets tagged from measurement; dark-room reads 7/7 tagged, 0 dark rooms, 0 untagged; the known-wrong hand tags are corrected by data, not by opinion.",
+      "resolution": "2026-07-06: shipped — scripts/derive-difficulty.mjs (pure derive()+latestBySet(), self-tested, in CI, --dry mode). 32/35 tags derived, 3 confirmed, 4 hand guesses overturned. All sets carry difficultyBasis; errored/absent cases keep existing tags. Re-runnable after any real eval run."
+    },
+    {
       "id": "paper-deployment-calibration",
       "target": "improve-loop (L5) \u2014 directional",
       "status": "pending",

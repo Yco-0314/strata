@@ -6,33 +6,62 @@
       "id": "money-rounding",
       "prompt": "Implement a function `roundMoney(amount, currency)` in TypeScript that rounds a monetary amount to the correct number of decimal places for the currency: 2 for USD/EUR, 0 for JPY, 3 for BHD. It must round half-up (banker's rounding NOT required), reject negative amounts by throwing, and throw on an unknown currency. Show your full work.",
       "assert": [
-        { "kind": "includes", "pattern": "test\\(|expect\\(|assert|describe\\(|it\\(" },
-        { "kind": "judge", "rubric": "A passing answer writes a FAILING test BEFORE the implementation (test-first / RED), explicitly notes running it and watching it fail before any production code exists, then writes the minimal implementation to make it pass. It must proceed in vertical slices (one test -> its implementation -> next test), NOT write the whole implementation first and add tests after, NOT write all tests up front then all the code, and NOT skip tests entirely. Fail the answer if the implementation is presented before the first test, or if there is no mention of watching a test fail." }
-      ]
+        {
+          "kind": "includes",
+          "pattern": "test\\(|expect\\(|assert|describe\\(|it\\("
+        },
+        {
+          "kind": "judge",
+          "rubric": "A passing answer writes a FAILING test BEFORE the implementation (test-first / RED), explicitly notes running it and watching it fail before any production code exists, then writes the minimal implementation to make it pass. It must proceed in vertical slices (one test -> its implementation -> next test), NOT write the whole implementation first and add tests after, NOT write all tests up front then all the code, and NOT skip tests entirely. Fail the answer if the implementation is presented before the first test, or if there is no mention of watching a test fail."
+        }
+      ],
+      "difficulty": 2
     },
     {
       "id": "password-validator",
       "prompt": "Write an `isValidPassword(pw)` function in JavaScript that enforces several rules: at least 8 characters, at least one uppercase letter, at least one digit, at least one of !@#$%, and must not contain whitespace. Return true/false. Walk me through how you build it.",
       "assert": [
-        { "kind": "includes", "pattern": "test\\(|expect\\(|assert|describe\\(|it\\(" },
-        { "kind": "judge", "rubric": "A passing answer applies test-driven development: it writes a failing test for a single rule FIRST, mentions watching/running it and confirming it FAILS (RED) before writing code, then adds the minimal implementation for that rule (GREEN), and repeats one rule at a time (vertical slices). Fail the answer if it writes the full validator implementation first and tests afterward, writes all tests before any implementation, or provides no tests at all." }
-      ]
+        {
+          "kind": "includes",
+          "pattern": "test\\(|expect\\(|assert|describe\\(|it\\("
+        },
+        {
+          "kind": "judge",
+          "rubric": "A passing answer applies test-driven development: it writes a failing test for a single rule FIRST, mentions watching/running it and confirming it FAILS (RED) before writing code, then adds the minimal implementation for that rule (GREEN), and repeats one rule at a time (vertical slices). Fail the answer if it writes the full validator implementation first and tests afterward, writes all tests before any implementation, or provides no tests at all."
+        }
+      ],
+      "difficulty": 2
     },
     {
       "id": "bugfix-discount",
       "prompt": "Bug report: our `applyDiscount(price, percent)` function returns a NEGATIVE total when percent is greater than 100 (e.g. applyDiscount(50, 120) returns -10 instead of 0). Current code is: `function applyDiscount(price, percent) { return price - price * (percent / 100); }`. Fix it so the discounted price never goes below 0.",
       "assert": [
-        { "kind": "includes", "pattern": "test\\(|expect\\(|assert|describe\\(|it\\(" },
-        { "kind": "judge", "rubric": "A passing answer treats this as a bug fix done test-first: it writes a FAILING test that reproduces the bug (e.g. asserts applyDiscount(50,120) === 0) BEFORE touching the implementation, explicitly notes running it and watching it fail (RED) to prove it captures the bug, and only then applies the minimal fix and confirms the test passes. Fail the answer if it edits the function first and adds a test after (or omits the regression test), or if it never mentions watching the test fail first." }
-      ]
+        {
+          "kind": "includes",
+          "pattern": "test\\(|expect\\(|assert|describe\\(|it\\("
+        },
+        {
+          "kind": "judge",
+          "rubric": "A passing answer treats this as a bug fix done test-first: it writes a FAILING test that reproduces the bug (e.g. asserts applyDiscount(50,120) === 0) BEFORE touching the implementation, explicitly notes running it and watching it fail (RED) to prove it captures the bug, and only then applies the minimal fix and confirms the test passes. Fail the answer if it edits the function first and adds a test after (or omits the regression test), or if it never mentions watching the test fail first."
+        }
+      ],
+      "difficulty": 2
     },
     {
       "id": "fizzbuzz-range",
       "prompt": "Implement `fizzbuzz(n)` that returns an array for 1..n where multiples of 3 become 'Fizz', multiples of 5 become 'Buzz', multiples of both become 'FizzBuzz', and everything else is the number as a string. Show your process.",
       "assert": [
-        { "kind": "includes", "pattern": "test\\(|expect\\(|assert|describe\\(|it\\(" },
-        { "kind": "judge", "rubric": "A passing answer builds this with TDD in vertical slices: it writes one failing test for one behavior FIRST, notes watching it fail (RED), writes the minimal code to pass it (GREEN), then moves to the next behavior one test at a time. Fail the answer if the complete implementation is written before any test, if all tests are written up front before any implementation, or if no test is written at all." }
-      ]
+        {
+          "kind": "includes",
+          "pattern": "test\\(|expect\\(|assert|describe\\(|it\\("
+        },
+        {
+          "kind": "judge",
+          "rubric": "A passing answer builds this with TDD in vertical slices: it writes one failing test for one behavior FIRST, notes watching it fail (RED), writes the minimal code to pass it (GREEN), then moves to the next behavior one test at a time. Fail the answer if the complete implementation is written before any test, if all tests are written up front before any implementation, or if no test is written at all."
+        }
+      ],
+      "difficulty": 2
     }
-  ]
+  ],
+  "difficultyBasis": "measured baseline (deepseek-chat, 2026-07-06T16:51:45.058Z, N=5): 1=baseline-pass(convergence-prone) 2=baseline-fail(discriminating); 3=hand-only"
 }
