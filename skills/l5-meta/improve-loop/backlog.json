@@ -3,6 +3,7 @@
   "items": [
     {
       "id": "skill-validator-rubric",
+      "spiralClass": "gate",
       "target": "new skill (L5)",
       "status": "resolved",
       "resolution": "2026-06-27: built skills/l5-meta/skill-validator (budget.mjs deterministic scan + 6-axis opus judge via subagents). Ran on all 19 skills \u2014 healthy (all >=7 overall). Found & fixed: tdd mode-count bug, ponytail caveat repetition. Surfaced 2 validator blind spots (directive-precision should be invocation-aware; budget should measure injected size not SKILL.md size for resident skills) \u2192 noted for skill-validator v2.",
@@ -11,6 +12,7 @@
     },
     {
       "id": "posttooluse-self-correct",
+      "spiralClass": "gate",
       "target": "new hook (L5/L6)",
       "status": "resolved",
       "resolution": "2026-06-27: built hooks/skill-postedit.mjs (PostToolUse on Write|Edit|MultiEdit) \u2014 runs the FAST deterministic skill-validator checks (frontmatter conformance + token budget) on an edited SKILL.md, plus the drift gate for ponytail, and injects violations as additionalContext so the author fixes them in the same turn. cwd-independent (resolves paths via its own location). Registered with the SessionStart hook in .claude-plugin/hooks/hooks.json. The expensive 6-axis LLM judge stays out of the hook (must be fast). self-test 8/8.",
@@ -19,6 +21,7 @@
     },
     {
       "id": "transcript-feedback-rewrite",
+      "spiralClass": "gate",
       "target": "writing-skills (L5) / improve-loop",
       "status": "resolved",
       "resolution": "2026-06-27: added a 'Transcript feedback' diagnosis step to improve-loop (read the failing skill-eval baseOut/skillOut, classify wrong-test / mis-fire / convergence / real-gap BEFORE re-authoring; a fix to the eval counts as progress). Also fixes the validator's finding that improve-loop's Author step was under-specified. DEMONSTRATED on real data: it caught that verification-before-completion's recorded +25-50% was an artifact of a broken `excludes` (which penalised the skill for QUOTING the forbidden phrase to refute it). Corrected \u2192 true \u0394 0 (Claude already verifies by default; baseline 4/4). verification joins the convergence group.",
@@ -27,6 +30,7 @@
     },
     {
       "id": "find-skills-reputation-gate",
+      "spiralClass": "gate",
       "target": "new skill (L5)",
       "status": "resolved",
       "resolution": "2026-06-27: built skills/l5-meta/find-skills \u2014 a supply-chain trust gate (adoption + verified source + non-overlap \u2192 PULL / PATTERN-ONLY / SKIP) run before any external borrow enters the backlog. A gate, not a behavior-changer (no \u0394 expected, like complexity-router). Retroactively agrees with calls already made (skill-tools plugin = PATTERN-ONLY, Trail of Bits = PULL).",
@@ -35,6 +39,7 @@
     },
     {
       "id": "gsd-fresh-session-per-phase",
+      "spiralClass": "gate",
       "target": "subagent-driven-development (L3)",
       "status": "resolved",
       "resolution": "2026-06-27: added a 'Long multi-phase work (fresh session per phase)' rule to SDD \u2014 group tasks into phases, start a fresh session at each boundary handing only the self-contained briefs + a one-paragraph state summary. Hard context isolation per phase beats in-session execution for long runs. One section, composes with the existing per-task loop.",
@@ -43,6 +48,7 @@
     },
     {
       "id": "harder-router-cases",
+      "spiralClass": "null",
       "target": "skills/l5-meta/skill-eval/sets/complexity-router.json (eval design)",
       "status": "resolved",
       "resolution": "2026-06-27: added 4 borderline cases (rename/retry/cache/webhook), ran both models. Still \u0394 0% in all four cells \u2014 baseline classifies correctly even on borderline. complexity-router is a flow GATE, not a classification-accuracy booster; single-shot eval cannot measure it. Closed: do not chase a \u0394. Any future signal needs a multi-turn modality.",
@@ -51,6 +57,7 @@
     },
     {
       "id": "harder-ponytail-cases",
+      "spiralClass": "ship",
       "target": "skills/l5-meta/skill-eval/sets/l0-ponytail.json (eval design)",
       "status": "resolved",
       "resolution": "2026-06-27: added 4 realistic over-build traps (Repository/Formatter/FlagService/EventBus), ran both models. ponytail SHIPS: +25% at (haiku \u00d7 hard) \u2014 the cell where over-building actually happens. Converges to 0% on sonnet (strong models don't over-build these anyway). Confirmed the synthesis's strong-model-convergence prediction. Spawned follow-up: gate ponytail's resident body by model tier (the -33% weak\u00d7easy regression).",
@@ -59,6 +66,7 @@
     },
     {
       "id": "impact-tiered-rule-slugs",
+      "spiralClass": "gate",
       "target": "review (L4)",
       "status": "resolved",
       "resolution": "2026-06-27: review output now tags each finding `[TIER] <lens>-<category-slug>` (CRITICAL/HIGH/MEDIUM/LOW + e.g. security-authz / correctness-edge-case / overeng-stdlib), sorted highest-impact-first so a reader fixes the worst thing first and a CI gate can fail on CRITICAL/HIGH only. From vercel react-best-practices.",
@@ -67,6 +75,7 @@
     },
     {
       "id": "paper-contract-compilation",
+      "spiralClass": "gate",
       "target": "to-issues (L2) + review (L4)",
       "status": "resolved",
       "hypothesis": "Compile acceptance criteria into explicit, independently-verifiable CONTRACT clauses, and add a completeness check (every required behavior maps to >=1 clause; uncovered behavior = 'contract incompleteness'). From Sengupta, Briggs, Myshakivskyi 2026 (arxiv 2605.25665) \u2014 their payments case study found contract gaps were a top failure source.",
@@ -75,6 +84,7 @@
     },
     {
       "id": "paper-failure-arbiter",
+      "spiralClass": "ship",
       "target": "debugging (L4) + improve-loop (L5)",
       "status": "resolved",
       "hypothesis": "Add a structured failure-arbiter taxonomy (contract-gap / verification-gap / implementation-bug / environment) so a failure is classified and ROUTED to the right fix before diving in. From Sengupta, Briggs, Myshakivskyi 2026 (arxiv 2605.25665)'s four-way failure arbiter.",
@@ -83,6 +93,7 @@
     },
     {
       "id": "paper-verification-boundary",
+      "spiralClass": "gate",
       "target": "review (L4)",
       "status": "resolved",
       "hypothesis": "Add a verification-boundary/coverage pass to review: after the 3 lenses, ask 'what changed behavior does NO lens cover?'. From Sengupta, Briggs, Myshakivskyi 2026 (arxiv 2605.25665) \u2014 verification-boundary issues (bugs no verifier owned) were a documented failure mode.",
@@ -91,6 +102,7 @@
     },
     {
       "id": "loopeng-eval-artifacts",
+      "spiralClass": "gate",
       "target": "skill-eval + improve-loop (L5)",
       "status": "resolved",
       "hypothesis": "Persist per-case transcripts and a structured JSONL run record (runs/log.jsonl), so improve-loop's transcript-feedback reads real artifacts instead of re-running, and the machine record leaves lessons.md. JSONL convention from cobusgreyling/loop-engineering's loop-run-log (2026-07-06 research); fixes the known gap that run.mjs discarded baseOut/skillOut after grading.",
@@ -99,6 +111,7 @@
     },
     {
       "id": "loopeng-loop-guard",
+      "spiralClass": "gate",
       "target": "new hook (hooks/loop-guard.mjs)",
       "status": "resolved",
       "hypothesis": "Mechanize debugging's '3+ failed fixes -> question the architecture' prose rule: PostToolUse:Bash hook normalizes failing check-command output into an error signature (paths/lines/timestamps/counts stripped), warns on same-signature >=3 (stall, with an 'Already tried' excerpt) or >=5 consecutive fails; success resets. Circuit breaker from loop-engineering's loop-context (its one substantial artifact); reset-on-success from 12-factor-agents; warn-only from session-orchestrator.",
@@ -107,6 +120,7 @@
     },
     {
       "id": "loopeng-reviewer-contract",
+      "spiralClass": "gate",
       "target": "review (L4) + subagent-driven-development (L3)",
       "status": "resolved",
       "hypothesis": "Operationalize review's lens-dispatch (the recorded follow-up) with a binding verifier contract: default-REJECT, evidence = file:line the reviewer read itself (implementer narrative is not evidence; execution claims go to verification-before-completion), last-line VERDICT: APPROVE|REJECT|ESCALATE, no verdict = REJECT. From loop-engineering's verifier agents (default-REJECT), loopflow (fail-closed last line), PlanWeave (bad-work vs cannot-judge split).",
@@ -115,6 +129,7 @@
     },
     {
       "id": "loopeng-lessons-layering",
+      "spiralClass": "gate",
       "target": "lessons.md + scripts/lessons-index.mjs",
       "status": "resolved",
       "hypothesis": "Split machine records (runs/log.jsonl) from human conclusions (lessons.md) and give the [[tag]] markers a consumer, so 25KB of append-only prose stays greppable. Run-log/curated separation from loop-engineering's STATE.md pruning + snarktank/ralph's promotion area.",
@@ -123,6 +138,7 @@
     },
     {
       "id": "loopeng-autonomy-graduation",
+      "spiralClass": "gate",
       "target": "improve-loop (L5)",
       "status": "resolved",
       "hypothesis": "Autonomous mode needs an explicit graduation gate (proven run history) instead of 'CI with an API key is cleanest'. The only substantial part of loop-engineering's L1->L3 grading: L3 must be earned by proven usage records.",
@@ -131,6 +147,7 @@
     },
     {
       "id": "loopeng-tokens-field",
+      "spiralClass": "gate",
       "target": "skill-eval (L5)",
       "status": "resolved",
       "hypothesis": "Record real token usage in the run record where the API path reports it (j.usage), null on the CLI path — never invent a number (contra loop-engineering's hardcoded cost constants). Prerequisite for the graduation gate's cost criterion.",
