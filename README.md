@@ -87,7 +87,7 @@ Hooks for Claude Code (`~/.claude/settings.json`, merge into any existing `"hook
 
 ```bash
 node skills/l5-meta/skill-eval/run.mjs <set.json>     # single-shot Δ (needs a model runner)
-node skills/l5-meta/improve-loop/loop.mjs             # measure all, gate, append lessons.md
+node skills/l5-meta/improve-loop/loop.mjs             # measure all, gate, record to runs/log.jsonl
 node skills/l5-meta/skill-validator/budget.mjs        # write-quality budget scan
 node scripts/check-rule-copies.mjs                    # invariant drift gate
 ```

@@ -43,7 +43,7 @@ actually built** — not before (no empty stubs).
 
 1. ~~L0 ponytail resident + invocation taxonomy + complexity router~~ — **built** (`using-architect`, `ponytail`, `complexity-router`).
 2. ~~One L5 eval loop (borrow `skill-creator`'s `run_loop`)~~ — **built** (`skill-eval`): with-skill-vs-baseline harness via the local `claude` CLI; scorer self-tested. Run from a terminal where `claude` is logged in.
-3. ~~The remaining ecosystem borrows → backlog~~ — **seeded** in `skills/l5-meta/improve-loop/backlog.json` (6 pending). Each ships only once it "moves a measured number" through `skill-eval`, driven by `improve-loop` and recorded in `lessons.md`.
+3. ~~The remaining ecosystem borrows → backlog~~ — **seeded** in `skills/l5-meta/improve-loop/backlog.json` (6 pending). Each ships only once it "moves a measured number" through `skill-eval`, driven by `improve-loop` — numbers land in `skill-eval`'s `runs/log.jsonl`, conclusions in `lessons.md`.
 
 ## Eval coverage (the loop's fuel)
 

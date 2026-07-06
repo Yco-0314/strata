@@ -9,6 +9,9 @@ eval-results.txt
 authcheck.txt
 /.scratch/
 
+# skill-eval per-run transcripts (local diagnosis artifacts; runs/log.jsonl stays tracked)
+skills/l5-meta/skill-eval/runs/*/
+
 # OS / tooling
 .DS_Store
 node_modules/

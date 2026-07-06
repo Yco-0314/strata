@@ -23,9 +23,9 @@ as a system prompt, once without (baseline) — and reports the delta.
 ## Why this is the keystone of L5
 
 ponytail, superpowers, and mattpocock all author skills by taste, with no
-measurement loop. We saw the cost directly: on strong models the over-build traps
-converge (baseline already picks the native answer), so eyeballing two outputs
-can't tell you the skill's marginal effect. This harness makes the effect a number.
+measurement loop. On strong models the over-build traps converge (baseline already
+picks the native answer), so eyeballing two outputs can't tell you the marginal
+effect. This harness makes it a number.
 
 ## Run it (from the Architect/ root)
 
@@ -35,9 +35,13 @@ node skills/l5-meta/skill-eval/run.mjs skills/l5-meta/skill-eval/sets/l0-ponytai
 EVAL_N=5 node skills/l5-meta/skill-eval/run.mjs <set.json>  # 5 runs/case, majority vote
 ```
 
-The runner shells out to the local `claude` CLI (`-p --append-system-prompt --model`).
-No API key needed if `claude` is logged in. Cost ≈ `2 × cases × EVAL_N` task calls, plus
-one judge call per `judge` assertion per run.
+The runner uses the direct API when `ANTHROPIC_API_KEY` is set, else the local logged-in
+`claude` CLI. Cost ≈ `2 × cases × EVAL_N` task calls, plus one judge call per `judge`
+assertion per run.
+
+Artifacts, every run: transcripts to `runs/<stamp>-<set>/<case>.{baseline,skill}.txt` and one
+JSONL record (per-case grades, Δ, gate) to `runs/log.jsonl` — `improve-loop`'s
+transcript-feedback reads these. Transcript dirs are gitignored; the log is tracked.
 
 - `EVAL_MODEL` — model under test (default: set's `model`, else `haiku`).
 - `EVAL_N` — runs per case; the case verdict is the **majority** across runs, which absorbs
@@ -94,8 +98,5 @@ ship gate: PASS — skill moves the number
 - The `judge` is a stronger but still imperfect signal: LLM-as-judge scores drift across
   model versions, so pin `EVAL_JUDGE_MODEL` and compare runs against each other, not against
   an absolute bar.
-- A real over-build effect shows up on weaker models / genuine traps (ponytail's own
-  benchmark finding). If `Δ = 0` on a strong model, try a weaker `EVAL_MODEL` before
-  concluding the skill is dead weight.
 - This is the gate the rest of the borrow backlog routes through: no ecosystem borrow
   ships until it clears a Δ here.

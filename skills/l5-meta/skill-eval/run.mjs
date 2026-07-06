@@ -6,10 +6,14 @@
 //      vote (default 1, absorbs LLM non-determinism); EVAL_JUDGE_MODEL for `judge`
 //      assertions (default 'sonnet').
 // Runner: ANTHROPIC_API_KEY set -> direct Anthropic API (curl); else the local `claude` CLI.
+// Artifacts: per-case transcripts -> runs/<stamp>-<set>/, one JSONL record -> runs/log.jsonl
+// (always appended, even on all-errored runs) — improve-loop's transcript-feedback reads these.
 // Borrowed: anthropics/skills skill-creator's with-skill-vs-baseline loop. See ADR 0001 / CONTEXT-MAP L5.
 
-import { readFileSync } from 'node:fs'
+import { readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
+
+const RUNS_DIR = 'skills/l5-meta/skill-eval/runs'
 
 const ERR = '__RUNNER_ERROR__'
 
@@ -25,6 +29,10 @@ const mapModel = (m) => MODEL_IDS[m] || m
 // Direct Anthropic API via curl (sync) — used when ANTHROPIC_API_KEY is set. Bypasses the
 // `claude -p` subscription/headless policy (the 403 "Request not allowed" some accounts hit).
 const API_KEY = () => process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || ''
+
+// Real token usage, summed across API calls this run; stays null on the CLI path (which
+// reports no usage) — record null rather than invent a number.
+let TOKENS = null
 function runApi(prompt, system, model) {
   const base = (process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com').replace(/\/$/, '')
   const key = API_KEY()
@@ -44,6 +52,11 @@ function runApi(prompt, system, model) {
   let j
   try { j = JSON.parse(out) } catch { return `${ERR} non-JSON API reply: ${out.slice(0, 160)}` }
   if (j.error || j.type === 'error') return `${ERR} API ${j.error?.type || ''}: ${(j.error?.message || '').slice(0, 160)}`
+  if (j.usage) {
+    TOKENS ??= { input: 0, output: 0 }
+    TOKENS.input += j.usage.input_tokens || 0
+    TOKENS.output += j.usage.output_tokens || 0
+  }
   const text = (j.content || []).filter(c => c.type === 'text').map(c => c.text).join('')
   return text.trim() ? text : `${ERR} empty API response`
 }
@@ -97,26 +110,38 @@ function judge(output, rubric, model) {
   return parseJudge(out)
 }
 
-// grade one run of a case → true | false | null(error)
+// grade one run of a case → { ok: true|false|null(error), out: transcript }
 function gradeOnce(c, system, model, judgeModel) {
   const out = runModel(c.prompt, system, model)
-  if (out.startsWith(ERR)) return null
+  if (out.startsWith(ERR)) return { ok: null, out }
   for (const a of c.assert) {
     const ok = a.kind === 'judge' ? judge(out, a.rubric, judgeModel) : check(out, a)
-    if (ok === null) return null
-    if (!ok) return false
+    if (ok === null) return { ok: null, out }
+    if (!ok) return { ok: false, out }
   }
-  return true
+  return { ok: true, out }
 }
 
-// grade N runs → majority verdict, or null if every run errored
+// grade N runs → { verdict: majority|null(all errored), outs: transcripts }
 function gradeCase(c, system, model, judgeModel, n) {
-  const results = []
+  const results = [], outs = []
   for (let i = 0; i < n; i++) {
     const r = gradeOnce(c, system, model, judgeModel)
-    if (r !== null) results.push(r)
+    outs.push(r.out)
+    if (r.ok !== null) results.push(r.ok)
   }
-  return results.length ? majority(results) : null
+  return { verdict: results.length ? majority(results) : null, outs }
+}
+
+// Pure: assemble the runs/log.jsonl record for one eval run (kind:'eval';
+// loop.mjs appends its own kind:'measure-run' lines to the same file).
+function buildRecord({ ts, set, skill, model, judgeModel, n, cases, dir, tokens = null }) {
+  const graded = cases.filter(c => c.baseline !== null && c.skill !== null)
+  const baselinePass = graded.filter(c => c.baseline).length
+  const skillPass = graded.filter(c => c.skill).length
+  const delta = graded.length ? Math.round((skillPass - baselinePass) / graded.length * 100) : null
+  const gate = !graded.length ? 'ERROR' : skillPass > baselinePass ? 'PASS' : 'NO MOVEMENT'
+  return { kind: 'eval', ts, set, skill, model, judgeModel, n, cases, graded: graded.length, errors: cases.length - graded.length, baselinePass, skillPass, delta, gate, tokens, dir }
 }
 
 // The one runnable check: the pure scorer (deterministic checks, judge parsing, vote).
@@ -136,6 +161,17 @@ function selfTest() {
   eq('majority 2of3', majority([true, true, false]), true)
   eq('majority 1of3', majority([true, false, false]), false)
   eq('majority tie 1of2', majority([true, false]), false)
+  const mk = (cases) => buildRecord({ ts: 't', set: 's', skill: null, model: 'haiku', judgeModel: 'sonnet', n: 1, cases, dir: 'd' })
+  const r1 = mk([{ id: 'a', baseline: false, skill: true }, { id: 'b', baseline: true, skill: true }, { id: 'c', baseline: null, skill: true }])
+  eq('record delta skips errored', r1.delta, 50)
+  eq('record gate PASS', r1.gate, 'PASS')
+  eq('record errors counted', r1.errors, 1)
+  const r2 = mk([{ id: 'a', baseline: null, skill: null }])
+  eq('record all-errored gate', r2.gate, 'ERROR')
+  eq('record all-errored delta', r2.delta, null)
+  eq('record no-movement gate', mk([{ id: 'a', baseline: true, skill: true }]).gate, 'NO MOVEMENT')
+  eq('record tokens default null', mk([{ id: 'a', baseline: true, skill: true }]).tokens, null)
+  eq('record tokens passthrough', buildRecord({ ts: 't', set: 's', skill: null, model: 'm', judgeModel: 'j', n: 1, cases: [], dir: 'd', tokens: { input: 5, output: 7 } }).tokens.output, 7)
   console.log(ok ? '\nself-test PASS' : '\nself-test FAIL')
   process.exit(ok ? 0 : 1)
 }
@@ -146,27 +182,33 @@ function main(setPath) {
   const judgeModel = process.env.EVAL_JUDGE_MODEL || 'sonnet'
   const n = Math.max(1, parseInt(process.env.EVAL_N || '1', 10))
   const system = set.skill ? skillBody(set.skill) : null
+  const setName = setPath.split('/').pop().replace(/\.json$/, '')
+  const ts = new Date().toISOString()
+  const dir = `${RUNS_DIR}/${ts.replace(/[:.]/g, '-')}-${setName}`
+  mkdirSync(dir, { recursive: true })
   console.log(`skill: ${set.skill || '(none)'}   model: ${model}   N: ${n}   cases: ${set.cases.length}\n`)
-  let base = 0, skill = 0, errors = 0
+  const sep = '\n\n===== next run =====\n\n'
+  const cases = []
   for (const c of set.cases) {
     const b = gradeCase(c, null, model, judgeModel, n)
     const s = gradeCase(c, system, model, judgeModel, n)
-    if (b === null || s === null) {
-      errors++
-      console.log(`  ${c.id.padEnd(18)} runner error (auth / undecidable)`)
-      continue
-    }
-    base += b ? 1 : 0; skill += s ? 1 : 0
-    console.log(`  ${c.id.padEnd(18)} baseline ${b ? 'PASS' : 'FAIL'}   with-skill ${s ? 'PASS' : 'FAIL'}`)
+    const safeId = c.id.replace(/[^\w.-]/g, '_')
+    writeFileSync(`${dir}/${safeId}.baseline.txt`, b.outs.join(sep))
+    writeFileSync(`${dir}/${safeId}.skill.txt`, s.outs.join(sep))
+    cases.push({ id: c.id, baseline: b.verdict, skill: s.verdict })
+    if (b.verdict === null || s.verdict === null) console.log(`  ${c.id.padEnd(18)} runner error (auth / undecidable)`)
+    else console.log(`  ${c.id.padEnd(18)} baseline ${b.verdict ? 'PASS' : 'FAIL'}   with-skill ${s.verdict ? 'PASS' : 'FAIL'}`)
   }
-  if (errors === set.cases.length) {
+  const rec = buildRecord({ ts, set: setName, skill: set.skill || null, model, judgeModel, n, cases, dir, tokens: TOKENS })
+  appendFileSync(`${RUNS_DIR}/log.jsonl`, JSON.stringify(rec) + '\n')
+  if (rec.gate === 'ERROR') {
     console.log('\nAll runs errored. Is `claude` authenticated and on PATH? Try: claude -p "hi" --model haiku')
     process.exit(2)
   }
-  const tot = set.cases.length - errors
-  const bRate = base / tot, sRate = skill / tot, d = sRate - bRate
-  console.log(`\n  pass rate   baseline ${base}/${tot} (${Math.round(bRate * 100)}%)   with-skill ${skill}/${tot} (${Math.round(sRate * 100)}%)   Δ ${d >= 0 ? '+' : ''}${Math.round(d * 100)}%`)
-  console.log(`  ship gate: ${sRate > bRate ? 'PASS — skill moves the number' : 'NO MOVEMENT — does this skill earn its context budget?'}`)
+  const tot = rec.graded
+  console.log(`\n  pass rate   baseline ${rec.baselinePass}/${tot} (${Math.round(rec.baselinePass / tot * 100)}%)   with-skill ${rec.skillPass}/${tot} (${Math.round(rec.skillPass / tot * 100)}%)   Δ ${rec.delta >= 0 ? '+' : ''}${rec.delta}%`)
+  console.log(`  ship gate: ${rec.gate === 'PASS' ? 'PASS — skill moves the number' : 'NO MOVEMENT — does this skill earn its context budget?'}`)
+  console.log(`  transcripts: ${dir}/   record: ${RUNS_DIR}/log.jsonl`)
 }
 
 const arg = process.argv[2]
