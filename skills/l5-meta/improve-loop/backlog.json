@@ -155,6 +155,15 @@
       "resolution": "2026-07-06: shipped — runApi accumulates j.usage into the record's tokens field; CLI path stays null. Self-tested (passthrough + default)."
     },
     {
+      "id": "spiral-difficulty-axis",
+      "spiralClass": "gate",
+      "target": "skill-eval sets + scripts/dark-room.mjs",
+      "status": "resolved",
+      "hypothesis": "A self-improving system can minimise surprise by AVOIDING hard tasks (the dark-room problem, active inference / Friston) — high stability that is really degeneration. Detect it: tag eval cases with difficulty (1 toy / 2 realistic / 3 adversarial); a set with no case >=2 is a dark room (only convergence-prone easy cases -> can't reveal a skill's value, mirroring strata's own 'sonnet converges to 0% on easy traps' finding). Borrow: zone-of-proximal-development / easy-to-hard curricula (arxiv 2602.10014). Not novel — the honest gate is the point.",
+      "ship_test": "dark-room.mjs flags a set with only difficulty-1 cases as a dark room; l0-ponytail (3 toy + 4 realistic) reads ok.",
+      "resolution": "2026-07-06: shipped — optional `difficulty` field on eval cases + scripts/dark-room.mjs (pure coverage + dark-room verdict, self-tested, in CI). l0-ponytail tagged as the worked example (ok: 4 discriminating); the other 6 sets honestly flagged untagged, accruing when touched. Gate-type; the time-series ('is difficulty rising?') accrues once difficulty is tagged at case-add time."
+    },
+    {
       "id": "paper-deployment-calibration",
       "target": "improve-loop (L5) \u2014 directional",
       "status": "pending",

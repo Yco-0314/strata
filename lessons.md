@@ -391,3 +391,35 @@ operationalized; inline arxiv refs moved to provenance (debugging, review).
 
 Follow-ups: run one real measure-run to seed runs/log.jsonl; consider a drift-eval scenario where
 loop-guard's warning should fire; paper-deployment-calibration stays the open structural gap.
+
+## 2026-07-06 — spiral engineering: web-review + two honest instruments
+
+The user's framing beyond loop engineering: **spiral engineering** = second-order feedback (the
+system edits *itself*), measured. strata is its reference implementation. This turn: verify, then
+instrument.
+
+**Web review (main-loop WebSearch — subagents 401 here, see memory):** NONE of the spiral
+mechanisms are novel — skill-interaction/ablation (SkillOps, SkillGen), MDL-for-skills, closed-loop
+plateau (8–13% oracle gap), VSM-for-agents (`sublayerapp/airb`), FEP/active-inference (arxiv
+2412.10425), difficulty curricula (ZPD) are all published/built. **The defensible contribution is
+narrow: honest measurement + mechanical gates + no self-certification, not any single mechanism.**
+State it narrowly — that is the whole difference from loop-engineering (a name in search of one).
+
+**Shipped (2):**
+- `spiral-pitch.mjs` hardened: relabelled count-PITCH as *cadence* (a rate, not a magnitude — the
+  star-velocity vanity trap), added **Δ-throughput** (sum of MEASURED Δ, no invented weights) and
+  **grounding ratio** (external-triggered vs self-generated; DPI ceiling on a closed loop). Baseline
+  snapshot: 17 changes, **76% GATE-type** (structure, no measured Δ), Δ-throughput +100% from 2
+  ships, grounding 88% (borrow-driven, DPI-healthy). [[spiral-pitch]]
+- difficulty axis + `dark-room.mjs`: optional `difficulty` on eval cases; a set with no case ≥2 is
+  a dark room (only-easy → can't reveal a skill's value — strata's own convergence finding, gated).
+  l0-ponytail tagged (ok); 6 sets honestly flagged untagged, accrue when touched. [[skill-eval]]
+
+**Priority reorder from the review:** grounding ratio ↑ (DPI-backed) — done. keystone-ablation ↓
+(well-trodden: SkillOps/SkillGen). VSM/FEP/MDL → manifesto *citations*, not builds. Deepest single
+metric considered but not built: MDL total description length (skill tokens + residual failure
+entropy) monotonically decreasing — the one number that can't be gamed by adding skills.
+
+**Honest scope:** no authenticated eval ran (subscription 401/403 unchanged) so pitch classes read
+human prose, not automated Δ; N small (no SOC/avalanche yet); dark-room is a coverage snapshot, the
+time-series accrues from here. Follow-up: tag difficulty on the other 6 sets as touched.

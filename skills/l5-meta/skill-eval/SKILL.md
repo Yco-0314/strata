@@ -65,18 +65,18 @@ transcript-feedback reads these. Transcript dirs are gitignored; the log is trac
 }
 ```
 
-- `skill` — the SKILL.md whose body is injected for the with-skill run (frontmatter stripped).
+- `skill` — the SKILL.md body injected for the with-skill run (frontmatter stripped).
 - assertion `kind`:
   - `includes` / `excludes` — regex over the whole output (cheap, deterministic).
-  - `verdict` — regex over the first line only (for classifier-style outputs).
-  - `judge` — `{ "kind": "judge", "rubric": "…what a passing answer must satisfy…" }`. An
-    LLM (`EVAL_JUDGE_MODEL`) grades the output against the rubric and returns pass/fail.
-    Use it for fuzzy criteria regex can't capture; pair it with cheap deterministic
-    assertions in the same case. An undecidable judge reply counts as a runner error, never
-    a silent pass.
+  - `verdict` — regex over the first line only (classifier outputs).
+  - `judge` — `{ "kind": "judge", "rubric": "…what a passing answer must satisfy…" }`: an LLM
+    (`EVAL_JUDGE_MODEL`) grades against the rubric. For fuzzy criteria regex can't capture; pair
+    with a deterministic one. An undecidable reply is a runner error, never a silent pass.
 - A case passes only if **all** its assertions pass.
-- Write assertions for the *behavior the skill mandates that baseline won't show* — e.g.
-  ponytail's `Skipped: X, add when Y` deferral marker — not for facts a good baseline already produces.
+- `difficulty` — optional 1 (toy) / 2 (realistic) / 3 (adversarial); `dark-room.mjs` flags sets
+  with no case ≥2 as a dark room (only-easy sets reveal nothing).
+- Assert *behavior the skill mandates that baseline won't show* (e.g. ponytail's `Skipped: X`),
+  not facts a good baseline already produces.
 
 ## Reading the result
 
