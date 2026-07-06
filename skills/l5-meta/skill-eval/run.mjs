@@ -33,22 +33,30 @@ const API_KEY = () => process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUT
 // Real token usage, summed across API calls this run; stays null on the CLI path (which
 // reports no usage) — record null rather than invent a number.
 let TOKENS = null
+
+// Send both auth headers so any Anthropic-compatible endpoint works:
+// Anthropic uses x-api-key; some compat providers (e.g. DeepSeek /anthropic) use Bearer.
+function curlMessages(base, key, payload) {
+  return execFileSync('curl', ['-s', `${base}/v1/messages`,
+    '-H', `x-api-key: ${key}`,
+    '-H', `authorization: Bearer ${key}`,
+    '-H', 'anthropic-version: 2023-06-01',
+    '-H', 'content-type: application/json',
+    '-d', JSON.stringify(payload)], { encoding: 'utf8', timeout: 180000, maxBuffer: 10 * 1024 * 1024 })
+}
 function runApi(prompt, system, model) {
   const base = (process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com').replace(/\/$/, '')
   const key = API_KEY()
   const payload = { model: mapModel(model), max_tokens: 4096, messages: [{ role: 'user', content: prompt }] }
   if (system) payload.system = system
   let out
+  // One retry on TRANSPORT failure only (curl throws: reset/timeout/DNS) — a transient network
+  // window killed 40/40 calls of one set on 2026-07-06. API-level errors are never retried.
   try {
-    // Send both auth headers so any Anthropic-compatible endpoint works:
-    // Anthropic uses x-api-key; some compat providers (e.g. DeepSeek /anthropic) use Bearer.
-    out = execFileSync('curl', ['-s', `${base}/v1/messages`,
-      '-H', `x-api-key: ${key}`,
-      '-H', `authorization: Bearer ${key}`,
-      '-H', 'anthropic-version: 2023-06-01',
-      '-H', 'content-type: application/json',
-      '-d', JSON.stringify(payload)], { encoding: 'utf8', timeout: 180000, maxBuffer: 10 * 1024 * 1024 })
-  } catch (e) { return `${ERR} ${e.message}` }
+    out = curlMessages(base, key, payload)
+  } catch {
+    try { out = curlMessages(base, key, payload) } catch (e) { return `${ERR} ${e.message}` }
+  }
   let j
   try { j = JSON.parse(out) } catch { return `${ERR} non-JSON API reply: ${out.slice(0, 160)}` }
   if (j.error || j.type === 'error') return `${ERR} API ${j.error?.type || ''}: ${(j.error?.message || '').slice(0, 160)}`

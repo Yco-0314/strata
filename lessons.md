@@ -459,3 +459,27 @@ was re-corrected); a canonical table needs a full `EVAL_N=5` run with `judge=dee
 Numbers are deepseek-chat-specific, not comparable to prior haiku/sonnet expectations. Follow-ups:
 canonical reasoner-judge N=5 run; teach dark-room + spiral-pitch to read measured Δ from log.jsonl
 (now unblocked); reconsider the static difficulty tags in favour of measured baseline pass rate.
+
+## 2026-07-06 — canonical N=5 table: 7/7 skills move the number (methodologically clean)
+
+Full re-run, `EVAL_N=5` majority vote, judge=deepseek-reasoner (stronger tier), model=deepseek-chat,
+all automated into runs/log.jsonl (19 records). **Every skill passes the ship gate:**
+
+  debugging +100 (baseline 0/4→4/4) · tdd +100 (0/3→3/3) · grilling +75 · verification +50 ·
+  l0-ponytail +43 · review +25 · complexity-router +13 · **Σ +406%**
+
+**Stability vs N=1:** three sets identical (router/grilling/ponytail exact), rest within one case.
+The judge-confound correction held under N=5: debugging (first-pass "Δ0, flagged dead weight") is
+the strongest skill on the table. Cost of the whole canonical run: ~360k tokens ≈ **well under $1**
+on DeepSeek — the marginal cost of honesty is now negligible.
+
+**Ops finding:** verification's first N=5 attempt lost 40/40 calls to a ~1-minute transport window
+(curl-level failures, endpoint fine minutes later). The ledger recorded gate:ERROR honestly and the
+re-run replaced it — the error path worked as designed. Hardened: run.mjs now retries ONCE on
+transport throw (never on API-level errors). [[skill-eval]]
+
+Measured layer now feeds the instruments (spiral-pitch measured Σ, dark-room per-model baseline
+coverage). Still open: difficulty tags for the other 6 sets should now be DERIVED from these
+measured baseline rates rather than hand-guessed; tdd has 1 errored case (judge undecidable ×5) —
+minor, recorded. The full-population honest read: on deepseek-chat, strata's skill layer is
+load-bearing everywhere, including where sonnet had converged.
