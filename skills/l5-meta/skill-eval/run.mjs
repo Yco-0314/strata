@@ -187,6 +187,10 @@ function main(setPath) {
   const dir = `${RUNS_DIR}/${ts.replace(/[:.]/g, '-')}-${setName}`
   mkdirSync(dir, { recursive: true })
   console.log(`skill: ${set.skill || '(none)'}   model: ${model}   N: ${n}   cases: ${set.cases.length}\n`)
+  // judge==model is a confound: a judge no stronger than the model under test can fail a correct
+  // answer and manufacture a false Δ0 (seen for real 2026-07-06 — debugging Δ0→+75% once the judge
+  // was upgraded). Warn; `judge`-graded cases are unreliable when this fires.
+  if (mapModel(model) === mapModel(judgeModel)) process.stderr.write(`  ⚠ judge (${judgeModel}) is not stronger than the model under test — judge-graded cases may be unreliable; use a stronger EVAL_JUDGE_MODEL.\n`)
   const sep = '\n\n===== next run =====\n\n'
   const cases = []
   for (const c of set.cases) {

@@ -423,3 +423,39 @@ entropy) monotonically decreasing — the one number that can't be gamed by addi
 **Honest scope:** no authenticated eval ran (subscription 401/403 unchanged) so pitch classes read
 human prose, not automated Δ; N small (no SOC/avalanche yet); dark-room is a coverage snapshot, the
 time-series accrues from here. Follow-up: tag difficulty on the other 6 sets as touched.
+
+## 2026-07-06 — FIRST real measured eval run (DeepSeek) — the ledger stops being prose
+
+Unblocked eval via a DeepSeek Anthropic-compatible endpoint. The blocker was **credits, not auth**
+(the subscription token authenticates for the direct API; the account is unfunded — see memory
+[[subagent-auth-401]]). `EVAL_MODEL=deepseek-chat`. 10 real `runs/log.jsonl` records with token
+counts; the run.mjs→loop.mjs pipeline is proven end-to-end on a live model.
+
+**Δ table (deepseek-chat under test, N=1):** grilling +75, tdd +75, verification +75, review +50,
+l0-ponytail +29→+43 (same set, two runs — N=1 noise), complexity-router +13, debugging **+75\***
+(\*corrected). 6/7 moved on the first pass; with the judge fixed, 7/7.
+
+**Findings — all from real data, none from prose:**
+1. **Judge==model is a confound that manufactured a false Δ0.** debugging read Δ0 with
+   judge=deepseek-chat — yet its with-skill transcript is textbook-correct (Phase 0 arbiter +
+   feedback-loop-FIRST + a red-capable command). The weak judge failed an obviously-correct answer.
+   Re-run with judge=deepseek-reasoner (stronger tier): debugging **Δ0 → +75%**. The skill is
+   load-bearing. strata's own "judge with a stronger model" rule is not optional — violating it
+   would have flagged a top skill for removal. Correcting the EVAL, not the skill, was the progress.
+   [[debugging]]
+2. **Difficulty is model-relative.** The dark-room difficulty tags (hand-assigned for weak haiku)
+   are wrong for deepseek-chat: the "toy" debounce trap CATCHES its baseline (reaches for lodash),
+   while some "realistic" traps pass unaided. The real discriminating signal is the MEASURED
+   baseline pass rate per model (now in log.jsonl), not a static integer — dark-room should derive
+   difficulty from measured baseline, tags as fallback. [[skill-eval]]
+3. **Skill value is model-relative.** verification-before-completion converges to Δ0 on sonnet
+   (recorded) but is +75% on deepseek-chat — the weaker model doesn't verify by default. A skill
+   "dead" on model A is alive on model B; depreciation must be per-model-tier, not global.
+   [[verification-before-completion]]
+4. **N=1 is noisy** (l0-ponytail +29 vs +43). Load-bearing reads need EVAL_N≥5.
+
+**Honest limits:** judge==model weakened every judge-heavy case on the first pass (only debugging
+was re-corrected); a canonical table needs a full `EVAL_N=5` run with `judge=deepseek-reasoner`.
+Numbers are deepseek-chat-specific, not comparable to prior haiku/sonnet expectations. Follow-ups:
+canonical reasoner-judge N=5 run; teach dark-room + spiral-pitch to read measured Δ from log.jsonl
+(now unblocked); reconsider the static difficulty tags in favour of measured baseline pass rate.
