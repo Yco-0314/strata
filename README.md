@@ -90,6 +90,12 @@ node skills/l5-meta/skill-eval/run.mjs <set.json>     # single-shot Δ (needs a 
 node skills/l5-meta/improve-loop/loop.mjs             # measure all, gate, record to runs/log.jsonl
 node skills/l5-meta/skill-validator/budget.mjs        # write-quality budget scan
 node scripts/check-rule-copies.mjs                    # invariant drift gate
+node scripts/spiral-pitch.mjs                         # second-order pitch + measured Σ
+node scripts/dark-room.mjs                            # eval difficulty coverage (dark rooms)
+node scripts/derive-difficulty.mjs                    # difficulty tags from measured baselines
+node scripts/mdl.mjs                                  # two-term description length (Pareto)
+node scripts/adr-calibration.mjs                      # ADR predictions due / hit rate
+node scripts/lessons-index.mjs [tag]                  # lessons entries by [[tag]]
 ```
 A model runner is the local `claude` CLI, or any Anthropic-compatible endpoint via
 `ANTHROPIC_API_KEY` / `ANTHROPIC_BASE_URL` (DeepSeek etc.). All scripts ship a `--self-test`.
