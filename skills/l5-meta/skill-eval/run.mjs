@@ -17,6 +17,10 @@ const RUNS_DIR = 'skills/l5-meta/skill-eval/runs'
 
 const ERR = '__RUNNER_ERROR__'
 
+// Pure: strip a secret from an error message before it lands in transcripts/records.
+// (execFileSync failures embed the full curl command line — key included — in e.message.)
+export const sanitize = (msg, secret) => secret ? String(msg).split(secret).join('<redacted>') : String(msg)
+
 function skillBody(path) {
   const raw = readFileSync(path, 'utf8')
   const m = raw.match(/^---\n[\s\S]*?\n---\n([\s\S]*)$/)
@@ -55,7 +59,7 @@ function runApi(prompt, system, model) {
   try {
     out = curlMessages(base, key, payload)
   } catch {
-    try { out = curlMessages(base, key, payload) } catch (e) { return `${ERR} ${e.message}` }
+    try { out = curlMessages(base, key, payload) } catch (e) { return `${ERR} ${sanitize(e.message, key)}` }
   }
   let j
   try { j = JSON.parse(out) } catch { return `${ERR} non-JSON API reply: ${out.slice(0, 160)}` }
@@ -179,6 +183,8 @@ function selfTest() {
   eq('record all-errored delta', r2.delta, null)
   eq('record no-movement gate', mk([{ id: 'a', baseline: true, skill: true }]).gate, 'NO MOVEMENT')
   eq('record tokens default null', mk([{ id: 'a', baseline: true, skill: true }]).tokens, null)
+  eq('sanitize redacts secret', sanitize('curl -H x-api-key: sk-abc123 failed', 'sk-abc123'), 'curl -H x-api-key: <redacted> failed')
+  eq('sanitize no secret passthrough', sanitize('plain error', ''), 'plain error')
   eq('record tokens passthrough', buildRecord({ ts: 't', set: 's', skill: null, model: 'm', judgeModel: 'j', n: 1, cases: [], dir: 'd', tokens: { input: 5, output: 7 } }).tokens.output, 7)
   console.log(ok ? '\nself-test PASS' : '\nself-test FAIL')
   process.exit(ok ? 0 : 1)

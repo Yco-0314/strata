@@ -8,11 +8,11 @@
       "assert": [
         {
           "kind": "includes",
-          "pattern": "(stdlib:|native:|yagni:|delete:|shrink:)"
+          "pattern": "\\b(stdlib|native|yagni|delete|shrink)\\b"
         },
         {
           "kind": "includes",
-          "pattern": "net:\\s*-\\s*\\d+"
+          "pattern": "net[`*_]{0,3}:[`*_\\s]*[-−]\\s*\\d+"
         },
         {
           "kind": "judge",
@@ -27,11 +27,11 @@
       "assert": [
         {
           "kind": "includes",
-          "pattern": "(stdlib:|native:|yagni:|delete:|shrink:)"
+          "pattern": "\\b(stdlib|native|yagni|delete|shrink)\\b"
         },
         {
           "kind": "includes",
-          "pattern": "net:\\s*-\\s*\\d+"
+          "pattern": "net[`*_]{0,3}:[`*_\\s]*[-−]\\s*\\d+"
         },
         {
           "kind": "judge",
@@ -46,11 +46,11 @@
       "assert": [
         {
           "kind": "includes",
-          "pattern": "(yagni:|delete:|shrink:|stdlib:|native:)"
+          "pattern": "\\b(stdlib|native|yagni|delete|shrink)\\b"
         },
         {
           "kind": "includes",
-          "pattern": "net:\\s*-\\s*\\d+"
+          "pattern": "net[`*_]{0,3}:[`*_\\s]*[-−]\\s*\\d+"
         },
         {
           "kind": "judge",
@@ -65,11 +65,11 @@
       "assert": [
         {
           "kind": "includes",
-          "pattern": "(shrink:|stdlib:|native:|yagni:|delete:)"
+          "pattern": "\\b(stdlib|native|yagni|delete|shrink)\\b"
         },
         {
           "kind": "includes",
-          "pattern": "net:\\s*-\\s*\\d+"
+          "pattern": "net[`*_]{0,3}:[`*_\\s]*[-−]\\s*\\d+"
         },
         {
           "kind": "judge",

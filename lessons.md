@@ -518,3 +518,21 @@ spec only as conformance patterns. [[spiral-pitch]]
   law holds unhooked · 5-layer structure absorbs all borrows · depreciation bites within a
   quarter. Exit 2 on overdue = a cron/CI hook. Curve starts EMPTY — retroactive predictions are
   fake and stay banned. First real deployment-adjacent calibration path for the framework.
+
+## 2026-07-07 — transcript-feedback clears the canonical run's 3 open threads
+
+The three "ugly" numbers all resolved by reading transcripts, none by editing skills:
+- **review Δ+25 → Δ+100** (wrong-test): the skill shipped its impact-tiered output contract
+  (2026-06-27) but the eval asserts still demanded the bare Lens-2 format — the eval was
+  punishing the skill for obeying its own newer contract. Asserts made format-tolerant
+  (validated: skill 5/5, baseline 0/5 on real transcripts before re-running). **Eval-pathology
+  class #3: assert-drift behind skill evolution** (after judge-confound and hand-guessed
+  difficulty). Evals need the same drift-gate mindset as skills. [[review]] [[skill-eval]]
+- **tdd Δ+75 with 4/4 graded** (was +100 on 3/4): fizzbuzz-range's nulls were the same transport
+  window that hit verification; with retry in place it grades — and with-skill HONESTLY fails
+  strict one-test-at-a-time slicing. A discriminating hard case working as designed. [[tdd]]
+- **Security hygiene**: execFileSync error paths embedded the full curl command — API key
+  included — in transcripts. sanitize() now redacts before anything lands on disk (self-tested;
+  live-verified <redacted> in the next failure). No committed or public file affected (checked).
+Corrected canonical Σ: **+456%** (review 100 · debugging 100 · tdd 75 · grilling 75 ·
+verification 50 · ponytail 43 · router 13). Null-ratio finally moves off its suspicious floor.
