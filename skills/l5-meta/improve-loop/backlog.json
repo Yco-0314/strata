@@ -173,6 +173,24 @@
       "resolution": "2026-07-06: shipped — scripts/derive-difficulty.mjs (pure derive()+latestBySet(), self-tested, in CI, --dry mode). 32/35 tags derived, 3 confirmed, 4 hand guesses overturned. All sets carry difficultyBasis; errored/absent cases keep existing tags. Re-runnable after any real eval run."
     },
     {
+      "id": "roadmap-mdl-pareto",
+      "spiralClass": "gate",
+      "target": "scripts/mdl.mjs + runs/log.jsonl (kind:mdl)",
+      "status": "resolved",
+      "hypothesis": "MDL: best system = min(theory length + length of what the theory fails to explain). L1 = injected corpus chars of the measured skills, L2 = residual with-skill failures. DELIBERATE deviation from the roadmap's 'one number': a chars-to-failures exchange rate would be an invented constant (the loop-cost anti-pattern), so the verdict is PARETO (IMPROVED/FLAT/TRADE/REGRESSED), never scalar. Snapshots accrue per model in the ledger.",
+      "ship_test": "First snapshot recorded (BASELINE); verdict logic covers all quadrants in self-test; comparisons never cross models.",
+      "resolution": "2026-07-07: shipped — scripts/mdl.mjs (pure bodyChars/residual/mdlVerdict/lastSnapshot, 10 self-test asserts, in CI). Baseline for deepseek-chat: L1 25457 chars (7 measured skills), L2 6 fails / 34 graded. From the next snapshot every change gets a Pareto verdict; deletion (L1 down, L2 flat) is finally VISIBLE progress."
+    },
+    {
+      "id": "roadmap-adr-calibration",
+      "spiralClass": "gate",
+      "target": "docs/adr/* + scripts/adr-calibration.mjs",
+      "status": "resolved",
+      "hypothesis": "Architecture judgment never gets a calibration curve because ADRs record decisions, not falsifiable predictions, and nobody revisits them. Fix: fenced ```prediction blocks (id/claim/checkBy/grade/evidence), a script that lists due-for-grading and computes hit rate over graded ones (unclear excluded), exit 2 on overdue. Grading stays human; no retroactive predictions (fake).",
+      "ship_test": "Parser + bucketing self-tested; ADR 0001 carries 3 forward predictions due 2026-10-06; report shows 'curve accrues from here', never a fake 0.",
+      "resolution": "2026-07-07: shipped — scripts/adr-calibration.mjs (in CI, self-tested) + 3 falsifiable predictions on ADR 0001 (invocation-law holds unhooked; 5-layer structure absorbs all borrows; depreciation bites within a quarter). First grading due 2026-10-06 — the Brier-style curve starts empty by design."
+    },
+    {
       "id": "paper-deployment-calibration",
       "target": "improve-loop (L5) \u2014 directional",
       "status": "pending",

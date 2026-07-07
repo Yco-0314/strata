@@ -90,3 +90,17 @@ overlap on several capabilities and carry one genuine philosophical conflict.
   (ponytail's nudge, superpowers' dispatch, mattpocock's hygiene + control).
 - **Keep all three installed side by side, unmodified** — rejected: the 1%-invoke rule, duplicate
   skills, and double SessionStart injectors actively fight each other.
+
+## Predictions (falsifiable, graded by scripts/adr-calibration.mjs — never retroactive)
+
+```prediction
+{"id":"0001-p1","claim":"Through 2026-10-06 no auto-fire violation of a user-invoked orchestrator (to-prd, to-issues, writing-plans, SDD, writing-skills, improve-loop) will be recorded in lessons.md — the invocation law holds without a PreToolUse enforcement hook.","checkBy":"2026-10-06","grade":null,"evidence":null}
+```
+
+```prediction
+{"id":"0001-p2","claim":"The 5-layer + constitution structure absorbs all borrows shipped through 2026-10-06 without needing a new layer (L6) or a second constitution file: every new mechanism lands as a skill, hook, or script inside the existing altitudes.","checkBy":"2026-10-06","grade":null,"evidence":null}
+```
+
+```prediction
+{"id":"0001-p3","claim":"By 2026-10-06 at least one skill with measured delta>0 on deepseek-chat reads delta 0 on a then-newer default model (the depreciation law bites within a quarter) — layering must handle per-model retirement, not global deletion.","checkBy":"2026-10-06","grade":null,"evidence":null}
+```

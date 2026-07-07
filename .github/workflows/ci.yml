@@ -26,6 +26,8 @@ jobs:
           node scripts/spiral-pitch.mjs --self-test
           node scripts/dark-room.mjs --self-test
           node scripts/derive-difficulty.mjs --self-test
+          node scripts/mdl.mjs --self-test
+          node scripts/adr-calibration.mjs --self-test
           node hooks/loop-guard.mjs --selftest
           node hooks/skill-postedit.mjs --selftest
           node hooks/session-start.mjs --selftest

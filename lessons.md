@@ -507,3 +507,14 @@ lines), and strata's REAL ledgers as the shipped exhibit — CI replays the cano
 fails if Σ +406% stops reproducing. strata's role inverts: reference implementation #1.
 Strata-only mechanisms (loop-guard, reviewer contract, graduation) stay here, described in the
 spec only as conformance patterns. [[spiral-pitch]]
+
+## 2026-07-07 — roadmap items 1+2: MDL (Pareto form) + ADR calibration
+
+- `scripts/mdl.mjs`: the two-term description-length gauge. Baseline (deepseek-chat): **L1 25,457
+  chars / L2 6 fails per 34 graded**. Deviation from the spec's "one number", on purpose: a
+  chars↔failures exchange rate is an invented constant (loop-cost anti-pattern) — verdict is
+  Pareto (IMPROVED/FLAT/TRADE/REGRESSED). Deletion is now visible progress. [[spiral-pitch]]
+- `scripts/adr-calibration.mjs` + 3 forward predictions on ADR 0001 (due 2026-10-06): invocation
+  law holds unhooked · 5-layer structure absorbs all borrows · depreciation bites within a
+  quarter. Exit 2 on overdue = a cron/CI hook. Curve starts EMPTY — retroactive predictions are
+  fake and stay banned. First real deployment-adjacent calibration path for the framework.
