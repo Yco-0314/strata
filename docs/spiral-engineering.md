@@ -45,6 +45,8 @@ name, not a discipline. This spec commits to publishing negative results.
 | Measured layer | What did automated eval actually record (latest per set@model)? | `runs/log.jsonl` via spiral-pitch/dark-room |
 | Dark-room | Can this eval even reveal skill value, or is it all-easy? (FEP dark-room problem) | `scripts/dark-room.mjs` |
 | Difficulty derivation | Tags from measurement, not opinion (difficulty is model-relative) | `scripts/derive-difficulty.mjs` |
+| MDL gauge | Is the corpus getting smaller-or-better? (chars vs residual failures, Pareto) | `scripts/mdl.mjs` |
+| ADR calibration | Do architecture predictions come true? (due-dates, hit rate) | `scripts/adr-calibration.mjs` |
 | Judge guard | Is the judge stronger than the model under test? (judge==model fabricates Δ0) | `skill-eval/run.mjs` |
 | Circuit breaker | Same-error stall detection, reset-on-success | `hooks/loop-guard.mjs` |
 | Verdict contract | Default-REJECT reviewers, fail-closed last-line verdict | `skills/l4-review/review/reviewer-contract.md` |
@@ -52,14 +54,15 @@ name, not a discipline. This spec commits to publishing negative results.
 | Drift gate | Invariant phrases survive verbatim in every copy | `scripts/check-rule-copies.mjs` |
 | Ledger split | Machine records (JSONL) vs human conclusions (lessons.md + `[[tag]]` index) | `runs/log.jsonl` · `scripts/lessons-index.mjs` |
 
-## 3. Evidence (2026-07-06, all automated into `runs/log.jsonl`)
+## 3. Evidence (2026-07-07, all automated into `runs/log.jsonl`)
 
 Canonical table — deepseek-chat under test, deepseek-reasoner judging, `EVAL_N=5` majority
 vote, whole run ≪ $1:
 
 ```
-debugging +100 · tdd +100 · grilling +75 · verification-before-completion +50
-l0-ponytail +43 · review +25 · complexity-router +13        Σ +406%, 7/7 pass the gate
+review +100 · debugging +100 · grilling +75 · tdd +75
+verification-before-completion +50 · l0-ponytail +43 · complexity-router +13
+                                            Σ +456%, 7/7 pass the gate
 ```
 
 Findings the instruments produced (none available to a pattern catalog):
@@ -75,6 +78,10 @@ Findings the instruments produced (none available to a pattern catalog):
 4. **Honest error paths.** A ~1-minute transport window killed 40/40 calls of one set; the
    ledger recorded `gate:ERROR`, the re-run replaced it, and the failure bought one retry-on-
    transport-throw (never on API errors). Nulls are recorded, never invented.
+5. **Assert drift.** review's eval asserts fell behind the skill's own evolved output
+   contract — reading Δ+25 for a Δ+100 skill until transcript-feedback caught it. An eval is
+   itself a maintained artifact; the third eval-pathology class after judge-confound and
+   guessed difficulty.
 
 ## 4. Laws (statement → root → instrument → how it dies)
 
@@ -123,18 +130,24 @@ while *being* verifier theater is the cautionary tale: naming a disease is not a
   right thing.
 - The architect's residue stays human for now: authoring the distribution of plausible
   futures, risk appetite, organizational negotiation, accountability. The counterfactual
-  wind tunnel (`design-tunnel`, roadmap) attacks the technical core — candidate selection
-  under change — not these.
+  wind tunnel (`design-tunnel`, shipped in the standalone repo) attacks the technical core —
+  candidate selection under change — not these.
 
 ## 8. Roadmap (each item ships only through the gate)
 
-1. **MDL total description length** — skill tokens + residual failure entropy, monotonically
-   decreasing: the one number you cannot game by adding skills. Unblocked now that residual
-   failure is measured.
-2. **ADR outcome calibration** — `predicted_outcomes` on ADRs + scheduled revisits graded
-   against git evidence: architecture judgment gets a Brier score.
-3. **design-tunnel** — agents implement the same next-N features against competing skeletons;
-   change-cost becomes a measurement (~$10²/decision vs an architect-week).
+1. **MDL total description length** — ~~roadmap~~ shipped: `scripts/mdl.mjs`, a two-term
+   Pareto gauge (L1 = measured-skill corpus chars, L2 = residual with-skill failures;
+   IMPROVED/FLAT/TRADE/REGRESSED — deliberately not a scalar, a chars-to-failures exchange
+   rate would be an invented constant). Baseline (deepseek-chat): 25,457 chars / 6 residual
+   fails per 34 graded. Deletion is now visible progress.
+2. **ADR outcome calibration** — ~~roadmap~~ shipped: `scripts/adr-calibration.mjs` grades
+   fenced prediction blocks in ADRs (due-dates, hit rate, exit 2 on overdue). ADR 0001
+   carries the first 3 falsifiable predictions (due 2026-10-06); the curve starts empty by
+   design — retroactive predictions are fake.
+3. **design-tunnel** — ~~roadmap~~ shipped in the standalone repo (v0 diff-proxy, then v1
+   verified: apply → tsc → behavioral probe). v1's headline is the attrition funnel itself
+   (24 parsed → 7 applied → 5 compiled → 4 probe-passed): unexecuted-diff proxies overstate
+   evidence. Open: v2 agentic file-editing.
 4. **Replication protocol** — the falsification experiment of §1, run on repos that aren't
    this one.
 
@@ -145,6 +158,8 @@ node skills/l5-meta/improve-loop/loop.mjs      # measure all skills (any Anthrop
 node scripts/spiral-pitch.mjs                  # pitch, grounding, null-ratio, measured Σ
 node scripts/dark-room.mjs                     # can your eval even discriminate?
 node scripts/derive-difficulty.mjs             # replace your difficulty guesses with data
+node scripts/mdl.mjs                           # two-term description length (Pareto)
+node scripts/adr-calibration.mjs               # ADR predictions due / hit rate
 ```
 
 Publish the numbers — including the ugly ones. That is the entire discipline.
